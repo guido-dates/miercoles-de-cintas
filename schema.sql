@@ -6,6 +6,8 @@ create table if not exists recs (
   title text not null,
   author text not null,
   comment text,
+  imdb_id text,   -- del autocomplete OMDb; permite lookup exacto de ratings
+  year text,
   created_at timestamptz not null default now()
 );
 
