@@ -20,8 +20,9 @@ Guardá la imagen del papa como `logo.png` en esta carpeta. Si no está, muestra
 Proyecto: `sdnhxripjpjaevafiguk` · Dashboard: https://supabase.com/dashboard/project/sdnhxripjpjaevafiguk
 El schema aplicado está en `schema.sql`. Las credenciales (URL + anon key) ya están en el bloque `CONFIG` de `index.html`.
 
-> El anon key va en el HTML y es visible: cualquiera con el link puede votar.
-> Para un grupo de 4 amigos está bien; no compartan la URL fuera del grupo.
+> **Ojo:** el repo es público, así que la anon key + URL del proyecto son buscables (no solo "quien tenga el link").
+> La key anon es pública por diseño en cualquier sitio estático; el riesgo real es que alguien escriba en la DB.
+> Mitigado con constraints (solo los 4 nombres como autor/votante, largos limitados). Peor caso: borran la lista — no hay data sensible.
 
 ### OMDb — ratings IMDb / Rotten Tomatoes (2 minutos, gratis)
 

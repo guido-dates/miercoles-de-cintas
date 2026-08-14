@@ -19,9 +19,15 @@ create table if not exists votes (
 );
 
 -- RLS abierto al anon key: es un hub entre amigos, no un banco.
--- Cualquiera con la URL + anon key puede escribir; no publiques el link fuera del grupo.
+-- El anon key es público (está en el HTML y en este repo), así que el daño
+-- posible se acota con constraints: solo los 4 nombres, largos limitados.
 alter table recs enable row level security;
 alter table votes enable row level security;
 
 create policy "anon_all_recs"  on recs  for all using (true) with check (true);
 create policy "anon_all_votes" on votes for all using (true) with check (true);
+
+alter table recs  add constraint recs_author_valid check (author in ('Marcos','Tomi','Juan','Guido'));
+alter table recs  add constraint recs_title_len    check (char_length(title) between 1 and 120);
+alter table recs  add constraint recs_comment_len  check (comment is null or char_length(comment) <= 200);
+alter table votes add constraint votes_voter_valid check (voter in ('Marcos','Tomi','Juan','Guido'));
