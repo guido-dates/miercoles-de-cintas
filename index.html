@@ -131,8 +131,11 @@
 
   /* ---------- Ratings ---------- */
   .ratings { display: flex; gap: 10px; margin-top: 7px; font-size: 11px; color: var(--cream-dim); min-height: 14px; flex-wrap: wrap; }
-  .ratings span { display: inline-flex; align-items: center; gap: 4px; }
+  .ratings span, .ratings a { display: inline-flex; align-items: center; gap: 4px; }
+  .ratings a { color: inherit; text-decoration: none; border-bottom: 1px dotted rgba(181,174,154,0.4); padding-bottom: 1px; transition: all .15s; }
+  .ratings a:hover { color: var(--cream); border-bottom-color: var(--gold); }
   .ratings .val { color: var(--cream); font-weight: 600; }
+  .poster, .rec-poster { cursor: pointer; }
 
   /* ---------- Buscador ---------- */
   .search-form { display: flex; gap: 10px; margin-bottom: 18px; }
@@ -585,21 +588,35 @@ async function getRatings({ t, y, i }) {
   } catch { return null; }
 }
 
-function ratingsHtml(r) {
+function imdbUrl(id, title) {
+  return id ? `https://www.imdb.com/title/${id}/` : `https://www.imdb.com/find/?q=${encodeURIComponent(title)}`;
+}
+function openImdbEl(el) {
+  window.open(imdbUrl(el.dataset.i, el.dataset.t), "_blank", "noopener");
+}
+
+function ratingsHtml(r, links = {}) {
   if (!r || (!r.imdb && !r.rt)) return "";
+  const wrap = (href, inner) => href
+    ? `<a href="${esc(href)}" target="_blank" rel="noopener" title="abrir">${inner}</a>`
+    : `<span>${inner}</span>`;
   let h = "";
-  if (r.imdb) h += `<span>★ IMDb <span class="val">${esc(r.imdb)}</span></span>`;
-  if (r.rt)   h += `<span>🍅 <span class="val">${esc(r.rt)}</span></span>`;
+  if (r.imdb) h += wrap(links.imdb, `★ IMDb <span class="val">${esc(r.imdb)}</span>`);
+  if (r.rt)   h += wrap(links.rt,   `🍅 <span class="val">${esc(r.rt)}</span>`);
   return h;
 }
 
 async function enrichRatings() {
   const nodes = document.querySelectorAll("[data-omdb]");
   await Promise.all([...nodes].map(async (el) => {
-    const r = await getRatings(JSON.parse(el.dataset.omdb));
+    const q = JSON.parse(el.dataset.omdb);
+    const r = await getRatings(q);
     if (!r) return;
     const rt = el.querySelector(".ratings");
-    if (rt) rt.innerHTML = ratingsHtml(r);
+    if (rt) rt.innerHTML = ratingsHtml(r, {
+      imdb: imdbUrl(q.i, q.t),
+      rt: `https://www.rottentomatoes.com/search?search=${encodeURIComponent(q.t)}`,
+    });
     const yr = el.querySelector(".year");
     if (yr && r.year) yr.textContent = r.year;
     const dir = el.querySelector(".dir");
@@ -629,7 +646,7 @@ function renderWatched() {
   }
   $("watchedGrid").innerHTML = ws.map((m, i) => `
     <div class="watched-card" style="animation-delay:${i * 0.05}s" data-omdb='${esc(JSON.stringify(m.imdb_id ? { t: m.title, i: m.imdb_id } : { t: m.title, y: m.year || undefined }))}'>
-      <div class="poster"><span class="ep">Nº ${i + 1}</span>${m.added_by === user ? `<button class="wdel" title="sacar de vistas" onclick="deleteWatched('${m.id}')">✕</button>` : ""}<span class="noposter">${esc(m.title[0])}</span></div>
+      <div class="poster" data-i="${m.imdb_id || ""}" data-t="${esc(m.title)}" onclick="openImdbEl(this)"><span class="ep">Nº ${i + 1}</span>${m.added_by === user ? `<button class="wdel" title="sacar de vistas" onclick="event.stopPropagation(); deleteWatched('${m.id}')">✕</button>` : ""}<span class="noposter">${esc(m.title[0])}</span></div>
       <div class="info">
         <div class="title">${esc(m.title)}</div>
         <div class="dir"></div>
@@ -669,7 +686,7 @@ function renderRecs() {
     return `
     <div class="rec ${isNext ? "next-pick" : ""}" style="animation-delay:${idx * 0.04}s" data-omdb='${esc(JSON.stringify(r.imdb_id ? { t: r.title, i: r.imdb_id } : { t: r.title }))}'>
       ${isNext ? `<span class="next-badge">Próxima cinta</span>` : ""}
-      <div class="rec-poster"><span class="ph">${esc(r.title[0])}</span></div>
+      <div class="rec-poster" data-i="${r.imdb_id || ""}" data-t="${esc(r.title)}" onclick="openImdbEl(this)"><span class="ph">${esc(r.title[0])}</span></div>
       <div class="rec-main">
         <div class="rec-head">
           <div>
