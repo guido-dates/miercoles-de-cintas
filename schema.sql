@@ -48,3 +48,16 @@ alter table watched enable row level security;
 create policy "anon_all_watched" on watched for all using (true) with check (true);
 alter table watched add constraint watched_title_len    check (char_length(title) between 1 and 120);
 alter table watched add constraint watched_added_by_valid check (added_by is null or added_by in ('Marcos','Tomi','Juan','Guido'));
+
+-- Hilos de comentarios en recomendaciones
+create table if not exists rec_comments (
+  id uuid primary key default gen_random_uuid(),
+  rec_id uuid not null references recs(id) on delete cascade,
+  author text not null,
+  body text not null,
+  created_at timestamptz not null default now()
+);
+alter table rec_comments enable row level security;
+create policy "anon_all_rec_comments" on rec_comments for all using (true) with check (true);
+alter table rec_comments add constraint rec_comments_author_valid check (author in ('Marcos','Tomi','Juan','Guido'));
+alter table rec_comments add constraint rec_comments_body_len check (char_length(body) between 1 and 300);
