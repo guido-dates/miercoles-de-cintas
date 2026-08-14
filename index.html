@@ -89,6 +89,9 @@
   .wdel:hover { color: var(--red); border-color: var(--red); }
   @media (hover: none) { .wdel { opacity: 0.85; } }
 
+  /* tras el primer paint, los re-renders no repiten animaciones de entrada */
+  .no-anim .watched-card, .no-anim .rec { animation: none; }
+
   .btn-ghost.gold { border-color: rgba(201,163,92,0.5); color: var(--gold); }
   .btn-ghost.gold:hover { background: var(--gold); border-color: var(--gold); color: #0b0b0b; }
 
@@ -631,6 +634,23 @@ function openImdbEl(el) {
   window.open(imdbUrl(el.dataset.i, el.dataset.t), "_blank", "noopener");
 }
 
+// Lectura sincrónica del cache de OMDb: permite renderizar pósters/ratings
+// en el mismo paint, sin el pop-in de la carga async.
+// undefined = nunca se buscó (enrich lo trae); null = OMDb no la tiene.
+function getRatingsSync({ t, y, i }) {
+  if (!CONFIG.OMDB_API_KEY) return null;
+  const key = i ? "omdb2:i:" + i : "omdb2:" + t.toLowerCase() + (y ? ":" + y : "");
+  const cached = localStorage.getItem(key);
+  return cached ? JSON.parse(cached) : undefined;
+}
+
+function omdbLinks(q) {
+  return {
+    imdb: imdbUrl(q.i, q.t),
+    rt: `https://www.rottentomatoes.com/search?search=${encodeURIComponent(q.t)}`,
+  };
+}
+
 function ratingsHtml(r, links = {}) {
   if (!r || (!r.imdb && !r.rt)) return "";
   const wrap = (href, inner) => href
@@ -642,17 +662,15 @@ function ratingsHtml(r, links = {}) {
   return h;
 }
 
+// Solo completa lo que el render no pudo sacar del cache (primera vez de cada peli)
 async function enrichRatings() {
-  const nodes = document.querySelectorAll("[data-omdb]");
+  const nodes = document.querySelectorAll("[data-needs-omdb]");
   await Promise.all([...nodes].map(async (el) => {
     const q = JSON.parse(el.dataset.omdb);
     const r = await getRatings(q);
     if (!r) return;
     const rt = el.querySelector(".ratings");
-    if (rt) rt.innerHTML = ratingsHtml(r, {
-      imdb: imdbUrl(q.i, q.t),
-      rt: `https://www.rottentomatoes.com/search?search=${encodeURIComponent(q.t)}`,
-    });
+    if (rt) rt.innerHTML = ratingsHtml(r, omdbLinks(q));
     const yr = el.querySelector(".year");
     if (yr && r.year) yr.textContent = r.year;
     const dir = el.querySelector(".dir");
@@ -669,6 +687,7 @@ async function enrichRatings() {
       rp.style.backgroundImage = `url("${r.poster}")`;
       rp.querySelector(".ph")?.remove();
     }
+    el.removeAttribute("data-needs-omdb");
   }));
 }
 
@@ -677,19 +696,23 @@ function renderWatched() {
   const ws = state.watched;
   $("watchedCount").textContent = `(${ws.length})`;
   if (!ws.length) {
-    $("watchedGrid").innerHTML = `<div class="empty" style="grid-column:1/-1">Todavía no hay funciones registradas.</div>`;
+    $("watchedGrid").innerHTML = loaded ? `<div class="empty" style="grid-column:1/-1">Todavía no hay funciones registradas.</div>` : "";
     return;
   }
-  $("watchedGrid").innerHTML = ws.map((m, i) => `
-    <div class="watched-card" style="animation-delay:${i * 0.05}s" data-omdb='${esc(JSON.stringify(m.imdb_id ? { t: m.title, i: m.imdb_id } : { t: m.title, y: m.year || undefined }))}'>
-      <div class="poster" data-i="${m.imdb_id || ""}" data-t="${esc(m.title)}" onclick="openImdbEl(this)"><span class="ep">Nº ${i + 1}</span>${m.added_by === user ? `<button class="wdel" title="sacar de vistas" onclick="event.stopPropagation(); deleteWatched('${m.id}')">✕</button>` : ""}<span class="noposter">${esc(m.title[0])}</span></div>
+  $("watchedGrid").innerHTML = ws.map((m, i) => {
+    const q = m.imdb_id ? { t: m.title, i: m.imdb_id } : { t: m.title, y: m.year || undefined };
+    const rr = getRatingsSync(q);
+    return `
+    <div class="watched-card" ${rr === undefined ? "data-needs-omdb" : ""} data-omdb='${esc(JSON.stringify(q))}'>
+      <div class="poster" data-i="${m.imdb_id || ""}" data-t="${esc(m.title)}" onclick="openImdbEl(this)"${rr?.poster ? ` style="background-image:url('${esc(rr.poster)}')"` : ""}><span class="ep">Nº ${i + 1}</span>${m.added_by === user ? `<button class="wdel" title="sacar de vistas" onclick="event.stopPropagation(); deleteWatched('${m.id}')">✕</button>` : ""}${rr?.poster ? "" : `<span class="noposter">${esc(m.title[0])}</span>`}</div>
       <div class="info">
         <div class="title">${esc(m.title)}</div>
-        <div class="dir"></div>
-        <div class="year">${m.year || ""}</div>
-        <div class="ratings"></div>
+        <div class="dir">${rr?.director ? esc(rr.director) : ""}</div>
+        <div class="year">${rr?.year || m.year || ""}</div>
+        <div class="ratings">${rr ? ratingsHtml(rr, omdbLinks(q)) : ""}</div>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 }
 
 function voteOf(recId, voter) {
@@ -700,8 +723,8 @@ function renderRecs() {
   const list = $("recList");
   $("recCount").textContent = `(${state.recs.length})`;
   if (!state.recs.length) {
-    list.innerHTML = `<div class="empty">Todavía nadie propuso nada. Rompé el hielo.
-      <span class="sub">Buscá arriba y elegí una película para el próximo miércoles.</span></div>`;
+    list.innerHTML = loaded ? `<div class="empty">Todavía nadie propuso nada. Rompé el hielo.
+      <span class="sub">Buscá arriba y elegí una película para el próximo miércoles.</span></div>` : "";
     return;
   }
   const scored = state.recs.map(r => {
@@ -719,6 +742,8 @@ function renderRecs() {
       .map(v => `<span class="chip ${v.vote > 0 ? "up" : v.vote < 0 ? "down" : ""}">
           ${v.vote ? `<span class="sym">${v.vote > 0 ? "+1" : "−1"}</span>` : ""}
           ${esc(v.voter)}${v.seen ? " 👁" : ""}</span>`).join("");
+    const q = r.imdb_id ? { t: r.title, i: r.imdb_id } : { t: r.title };
+    const rr = getRatingsSync(q);
     const cmts = (state.comments || []).filter(c => c.rec_id === r.id);
     const thread = `
       <div class="thread">
@@ -729,16 +754,16 @@ function renderRecs() {
         </form>
       </div>`;
     return `
-    <div class="rec ${isNext ? "next-pick" : ""}" style="animation-delay:${idx * 0.04}s" data-omdb='${esc(JSON.stringify(r.imdb_id ? { t: r.title, i: r.imdb_id } : { t: r.title }))}'>
+    <div class="rec ${isNext ? "next-pick" : ""}" ${rr === undefined ? "data-needs-omdb" : ""} data-omdb='${esc(JSON.stringify(q))}'>
       ${isNext ? `<span class="next-badge">Próxima cinta</span>` : ""}
-      <div class="rec-poster" data-i="${r.imdb_id || ""}" data-t="${esc(r.title)}" onclick="openImdbEl(this)"><span class="ph">${esc(r.title[0])}</span></div>
+      <div class="rec-poster" data-i="${r.imdb_id || ""}" data-t="${esc(r.title)}" onclick="openImdbEl(this)"${rr?.poster ? ` style="background-image:url('${esc(rr.poster)}')"` : ""}>${rr?.poster ? "" : `<span class="ph">${esc(r.title[0])}</span>`}</div>
       <div class="rec-main">
         <div class="rec-head">
           <div>
             <div class="rec-title">${esc(r.title)}</div>
-            <div class="rec-meta">${r.year ? esc(r.year) + " · " : ""}<span class="dir-inline"></span>propuesta de <b>${esc(r.author)}</b></div>
+            <div class="rec-meta">${r.year ? esc(r.year) + " · " : ""}<span class="dir-inline">${rr?.director ? `Dir. ${esc(rr.director)} · ` : ""}</span>propuesta de <b>${esc(r.author)}</b></div>
             ${r.comment ? `<div class="rec-comment">“${esc(r.comment)}”</div>` : ""}
-            <div class="ratings"></div>
+            <div class="ratings">${rr ? ratingsHtml(rr, omdbLinks(q)) : ""}</div>
           </div>
           <div class="score ${cls}">${r._score > 0 ? "+" : ""}${r._score}<small>votos</small></div>
         </div>
@@ -771,6 +796,8 @@ function renderNext() {
     : `Función <b>Nº ${n}</b> · ${esc(fecha)} · <b>${left === 1 ? "falta 1 día" : `faltan ${left} días`}</b>`;
 }
 
+let booted = false;
+
 function render() {
   $("whoami").textContent = user || "—";
   $("membersLine").textContent = CONFIG.FRIENDS.join(" · ");
@@ -781,15 +808,29 @@ function render() {
   renderWatched();
   renderRecs();
   enrichRatings();
+  if (!booted) {
+    booted = true;
+    // tras el primer paint, las animaciones de entrada no se repiten en cada re-render
+    setTimeout(() => document.body.classList.add("no-anim"), 600);
+  }
 }
 
 /* ---------------- Actions ---------------- */
+let lastRenderKey = null;
+let loaded = false;
+
 async function refresh(manual = false) {
   try {
-    state = await store.load();
+    const fresh = await store.load();
+    const key = JSON.stringify(fresh);
+    state = fresh;
+    loaded = true;
     // no pisar la pantalla si alguien está escribiendo un comentario (poll de fondo)
     const el = document.activeElement;
-    if (!manual && el?.classList?.contains("cmt-input") && el.value.trim()) return;
+    if (!manual && el?.classList?.contains("cmt-input") && el.value.trim()) { lastRenderKey = null; return; }
+    // nada cambió → ni tocar el DOM (mata el parpadeo del poll)
+    if (!manual && key === lastRenderKey) return;
+    lastRenderKey = key;
     render();
   } catch (e) {
     if (manual) alert("Error cargando datos: " + e.message);
@@ -1114,7 +1155,7 @@ function setUser(name) {
 }
 
 /* ---------------- Init ---------------- */
-render();
+render();          // header, countdown e identidad al toque; las grillas llegan con refresh()
 refresh();
 if (!user) openIdentity();
 if (useSupabase) {
