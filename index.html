@@ -297,14 +297,50 @@
 
   .hidden { display: none !important; }
 
+  /* sin delay ni zoom por double-tap en botones (spam de +1) */
+  button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
   @media (max-width: 640px) {
+    /* iOS zoomea al focusear inputs con font-size < 16px */
+    input { font-size: 16px !important; }
+
+    .topbar-in { gap: 10px; padding: 0 12px; height: 52px; }
+    .logo-mini { width: 32px; height: 32px; }
     .members { display: none; }
-    .brand { font-size: 14px; letter-spacing: 0.1em; }
+    .brand { font-size: 13px; letter-spacing: 0.07em; }
+    .identity { font-size: 11px; gap: 6px; }
+    .identity button { padding: 3px 7px; }
+
+    .wrap { padding: 22px 14px 60px; }
+    section { margin-bottom: 40px; }
+    h2 { font-size: 16px; }
+
+    .watched-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+
+    .search-form { gap: 8px; }
+    .search-form input { padding: 12px 13px; }
+    .btn-solid { padding: 12px 16px; letter-spacing: 0.08em; }
+    .results-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 9px; }
+
+    .picked { padding: 13px; gap: 12px; }
+    .picked-poster { width: 62px; }
+    .picked-main { min-width: 0; }
+    .picked-title { font-size: 17px; }
+    .picked-actions { flex-wrap: wrap; }
+    .picked-actions button { flex: 1; white-space: nowrap; }
+
+    .rec { padding: 12px; gap: 12px; }
+    .rec-poster { width: 52px; }
+    .rec-title { font-size: 16.5px; }
+    .rec-head { flex-direction: column-reverse; gap: 6px; }
+    .score { text-align: left; font-size: 22px; min-width: 0; display: flex; align-items: baseline; gap: 6px; }
+    .score small { margin-top: 0; }
+    .rec-actions { gap: 6px; }
+    .vote-btn { padding: 8px 13px; }
+    .del-btn { padding: 8px 10px; }
+
+    .modal { padding: 28px 24px; width: min(90vw, 340px); }
     .modal .people { grid-template-columns: 1fr; }
-    .rec { flex-direction: row; }
-    .rec-head { flex-direction: column-reverse; }
-    .score { text-align: left; }
-    .results-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
   }
 </style>
 </head>
