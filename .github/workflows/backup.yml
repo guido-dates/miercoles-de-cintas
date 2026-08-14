@@ -15,17 +15,23 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      URL: https://sdnhxripjpjaevafiguk.supabase.co
-      KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkbmh4cmlwanBqYWV2YWZpZ3VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDUwMTQsImV4cCI6MjEwMjI4MTAxNH0.OTw4PUaoQ7jbmEhMY-W1gSWPjaqzBwu1ECghAQbdsOQ
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: main
+          path: main
+      - uses: actions/checkout@v4
+        with:
           ref: backups
+          path: bk
 
       - name: Dump tablas
+        working-directory: bk
         run: |
           set -euo pipefail
+          # credenciales desde index.html: única fuente de verdad, no driftea
+          URL=$(grep -o 'SUPABASE_URL: "[^"]*"' ../main/index.html | cut -d'"' -f2)
+          KEY=$(grep -o 'SUPABASE_ANON_KEY: "[^"]*"' ../main/index.html | cut -d'"' -f2)
           declare -A order=(
             [recs]="created_at.asc"
             [votes]="rec_id.asc,voter.asc"
@@ -38,6 +44,7 @@ jobs:
           done
 
       - name: Commit si cambió
+        working-directory: bk
         run: |
           git config user.name "backup-bot"
           git config user.email "actions@github.com"

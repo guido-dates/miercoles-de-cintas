@@ -242,13 +242,14 @@
   .rec:hover { border-color: rgba(232,226,208,0.3); }
   .rec.next-pick { border-color: var(--gold); background: linear-gradient(180deg, rgba(201,163,92,0.05), transparent 45%), var(--panel); }
   .next-badge {
-    position: absolute; top: -9px; left: 14px;
+    position: absolute; top: -9px; left: 14px; z-index: 1;
     background: var(--gold); color: #0b0b0b; font-size: 10px; font-weight: 600;
     letter-spacing: 0.15em; text-transform: uppercase; padding: 2px 10px;
   }
   .rec-poster {
-    width: 112px; flex: none; align-self: stretch; min-height: 150px;
-    background: #000 center/cover no-repeat; filter: grayscale(1);
+    /* contain: el póster entra entero siempre; el sobrante queda negro (invisible sobre el panel) */
+    width: 140px; flex: none; align-self: stretch; min-height: 150px;
+    background: #000 center/contain no-repeat; filter: grayscale(1);
     border-right: 1px solid rgba(232,226,208,0.1);
     display: flex; align-items: center; justify-content: center;
     transition: filter .2s;
@@ -389,7 +390,7 @@
     .picked-actions button { flex: 1; white-space: nowrap; }
 
     .rec { gap: 12px; }
-    .rec-poster { width: 84px; min-height: 132px; }
+    .rec-poster { width: 96px; min-height: 132px; }
     .rec-main { padding: 12px 12px 12px 0; }
     .rec-title { font-size: 16.5px; }
     .rec-head { flex-direction: column-reverse; gap: 6px; }
