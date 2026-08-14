@@ -631,7 +631,9 @@ function imdbUrl(id, title) {
   return id ? `https://www.imdb.com/title/${id}/` : `https://www.imdb.com/find/?q=${encodeURIComponent(title)}`;
 }
 function openImdbEl(el) {
-  window.open(imdbUrl(el.dataset.i, el.dataset.t), "_blank", "noopener");
+  // sin features string: Chrome abre pestaña (con "noopener" como feature lo trata como popup)
+  const w = window.open(imdbUrl(el.dataset.i, el.dataset.t), "_blank");
+  if (w) w.opener = null;
 }
 
 // Lectura sincrónica del cache de OMDb: permite renderizar pósters/ratings
