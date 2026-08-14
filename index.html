@@ -10,6 +10,7 @@
   :root {
     --bg: #0b0b0b;
     --panel: #121212;
+    --panel2: #171717;
     --cream: #e8e2d0;
     --cream-dim: #b5ae9a;
     --cream-faint: rgba(232, 226, 208, 0.14);
@@ -20,164 +21,216 @@
     --sans: 'Inter', -apple-system, sans-serif;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scrollbar-color: #333 #0b0b0b; }
   body {
     background: var(--bg);
     color: var(--cream);
     font-family: var(--sans);
     min-height: 100vh;
-    background-image: radial-gradient(ellipse at 50% -10%, rgba(232,226,208,0.05), transparent 60%);
+    background-image: radial-gradient(ellipse at 50% -10%, rgba(232,226,208,0.045), transparent 55%);
   }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 48px 20px 80px; }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
-  /* ---------- Header ---------- */
-  header { text-align: center; margin-bottom: 56px; }
-  .logo-frame {
-    width: 180px; height: 180px; margin: 0 auto 28px;
-    border: 1px solid var(--cream-faint);
-    padding: 10px; background: #000;
-    display: flex; align-items: center; justify-content: center;
+  /* ---------- Header compacto sticky ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 40;
+    background: rgba(11,11,11,0.92); backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--cream-faint);
   }
-  .logo-frame img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
-  .logo-fallback {
-    font-family: var(--serif); font-size: 64px; font-weight: 900;
-    color: var(--cream); font-style: italic;
+  .topbar-in {
+    max-width: 980px; margin: 0 auto; padding: 0 20px;
+    display: flex; align-items: center; gap: 14px; height: 58px;
   }
-  h1 {
-    font-family: var(--serif); font-weight: 900;
-    font-size: clamp(34px, 7vw, 58px);
-    letter-spacing: 0.06em; text-transform: uppercase; line-height: 1.05;
+  .logo-mini {
+    width: 36px; height: 36px; flex: none;
+    border: 1px solid var(--cream-faint); background: #000;
+    display: flex; align-items: center; justify-content: center; overflow: hidden;
   }
-  .subtitle {
-    margin-top: 14px; color: var(--cream-dim);
-    font-size: 12px; letter-spacing: 0.35em; text-transform: uppercase;
+  .logo-mini img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1) contrast(1.05); }
+  .logo-fallback { font-family: var(--serif); font-style: italic; font-weight: 900; font-size: 15px; }
+  .brand {
+    font-family: var(--serif); font-weight: 900; font-size: 17px;
+    letter-spacing: 0.16em; text-transform: uppercase; white-space: nowrap;
   }
-  .divider {
-    width: 64px; height: 1px; background: var(--gold);
-    margin: 26px auto 0; opacity: 0.7;
+  .brand .amp { color: var(--gold); }
+  .members {
+    color: var(--cream-dim); font-size: 10px; letter-spacing: 0.28em;
+    text-transform: uppercase; white-space: nowrap; margin-left: 4px;
   }
-
-  /* ---------- Identity bar ---------- */
-  .identity {
-    display: flex; justify-content: center; align-items: center; gap: 10px;
-    margin-bottom: 48px; font-size: 13px; color: var(--cream-dim);
-  }
+  .identity { margin-left: auto; display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--cream-dim); white-space: nowrap; }
   .identity b { color: var(--cream); font-weight: 600; }
   .identity button {
     background: none; border: 1px solid var(--cream-faint); color: var(--cream-dim);
-    font-size: 11px; padding: 4px 10px; cursor: pointer; letter-spacing: 0.08em;
+    font-size: 10px; padding: 4px 9px; cursor: pointer; letter-spacing: 0.08em;
     text-transform: uppercase; font-family: var(--sans); transition: all .15s;
   }
   .identity button:hover { color: var(--cream); border-color: var(--cream-dim); }
 
-  /* ---------- Sections ---------- */
-  section { margin-bottom: 64px; }
-  h2 {
-    font-family: var(--serif); font-size: 22px; font-weight: 700;
-    letter-spacing: 0.12em; text-transform: uppercase;
-    display: flex; align-items: center; gap: 16px; margin-bottom: 24px;
-  }
-  h2::after { content: ''; flex: 1; height: 1px; background: var(--cream-faint); }
-  h2 .count { font-family: var(--sans); font-size: 12px; color: var(--cream-dim); font-weight: 400; letter-spacing: 0; }
+  .wrap { max-width: 980px; margin: 0 auto; padding: 36px 20px 80px; }
 
-  /* ---------- Watched grid ---------- */
-  .watched-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 16px; }
+  /* ---------- Secciones ---------- */
+  section { margin-bottom: 56px; }
+  h2 {
+    font-family: var(--serif); font-size: 19px; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase;
+    display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px;
+  }
+  h2::after { content: ''; flex: 1; height: 1px; background: var(--cream-faint); align-self: center; }
+  h2 .count { font-family: var(--sans); font-size: 11px; color: var(--cream-dim); font-weight: 400; letter-spacing: 0; }
+
+  /* ---------- Ya vistas ---------- */
+  .watched-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 14px; }
   .watched-card {
     border: 1px solid var(--cream-faint); background: var(--panel);
     display: flex; flex-direction: column; overflow: hidden;
+    animation: rise .35s ease both;
+    transition: border-color .2s, transform .2s;
   }
+  .watched-card:hover { border-color: rgba(232,226,208,0.35); transform: translateY(-2px); }
   .poster {
     aspect-ratio: 2/3; background: #000 center/cover no-repeat;
     display: flex; align-items: center; justify-content: center;
     filter: grayscale(1) contrast(1.05); position: relative;
+    transition: filter .25s;
   }
+  .watched-card:hover .poster { filter: grayscale(0.4) contrast(1.05); }
   .poster .ep {
-    position: absolute; top: 8px; left: 8px;
-    font-family: var(--serif); font-style: italic; font-size: 13px;
-    color: var(--cream-dim); background: rgba(0,0,0,0.75); padding: 2px 8px;
+    position: absolute; top: 8px; left: 8px; z-index: 2;
+    font-family: var(--serif); font-style: italic; font-size: 12px;
+    color: var(--cream-dim); background: rgba(0,0,0,0.78); padding: 2px 8px;
   }
   .poster .noposter { font-family: var(--serif); font-size: 40px; font-weight: 900; color: rgba(232,226,208,0.15); }
-  .watched-card .info { padding: 12px 12px 14px; }
+  .watched-card .info { padding: 11px 12px 13px; border-top: 1px solid rgba(232,226,208,0.07); }
   .watched-card .title { font-family: var(--serif); font-weight: 700; font-size: 15px; line-height: 1.25; }
-  .watched-card .year { color: var(--cream-dim); font-size: 11px; margin-top: 2px; }
+  .watched-card .dir { color: var(--cream-dim); font-size: 11px; margin-top: 3px; min-height: 13px; }
+  .watched-card .year { color: rgba(181,174,154,0.65); font-size: 10.5px; margin-top: 1px; letter-spacing: 0.06em; }
 
   /* ---------- Ratings ---------- */
-  .ratings { display: flex; gap: 10px; margin-top: 8px; font-size: 11px; color: var(--cream-dim); min-height: 15px; flex-wrap: wrap; }
+  .ratings { display: flex; gap: 10px; margin-top: 7px; font-size: 11px; color: var(--cream-dim); min-height: 14px; flex-wrap: wrap; }
   .ratings span { display: inline-flex; align-items: center; gap: 4px; }
   .ratings .val { color: var(--cream); font-weight: 600; }
 
-  /* ---------- Rec form ---------- */
-  .rec-form { display: flex; gap: 10px; margin-bottom: 28px; flex-wrap: wrap; }
-  .rec-form input {
-    background: var(--panel); border: 1px solid var(--cream-faint); color: var(--cream);
-    padding: 12px 14px; font-family: var(--sans); font-size: 14px; outline: none;
-    transition: border-color .15s;
+  /* ---------- Buscador ---------- */
+  .search-form { display: flex; gap: 10px; margin-bottom: 18px; }
+  .search-form input {
+    flex: 1; background: var(--panel); border: 1px solid var(--cream-faint); color: var(--cream);
+    padding: 13px 16px; font-family: var(--sans); font-size: 14px; outline: none;
+    transition: border-color .15s, background .15s;
   }
-  .rec-form input:focus { border-color: var(--cream-dim); }
-  .rec-form input::placeholder { color: rgba(181,174,154,0.5); }
-  #recComment { flex: 3; min-width: 200px; }
-  .ac-wrap { position: relative; flex: 2; min-width: 200px; display: flex; }
-  .ac-wrap input { flex: 1; width: 100%; }
-  .ac-badge {
-    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
-    font-size: 10px; color: var(--gold); letter-spacing: 0.08em; pointer-events: none;
-  }
-  .ac-badge.hidden { display: none; }
-  .ac-list {
-    position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 20;
-    background: #0e0e0e; border: 1px solid var(--cream-dim);
-    max-height: 320px; overflow-y: auto; box-shadow: 0 12px 32px rgba(0,0,0,0.7);
-  }
-  .ac-list.hidden { display: none; }
-  .ac-item {
-    display: flex; gap: 10px; align-items: center; padding: 8px 10px; cursor: pointer;
-    border-bottom: 1px solid rgba(232,226,208,0.06);
-  }
-  .ac-item:last-child { border-bottom: none; }
-  .ac-item:hover, .ac-item.active { background: rgba(232,226,208,0.08); }
-  .ac-item img, .ac-item .ac-noposter {
-    width: 32px; height: 48px; object-fit: cover; flex: none;
-    filter: grayscale(1); background: #000;
-  }
-  .ac-item .ac-noposter {
-    display: flex; align-items: center; justify-content: center;
-    font-family: var(--serif); color: rgba(232,226,208,0.2); font-size: 18px;
-  }
-  .ac-item .ac-t { font-size: 13px; font-weight: 500; }
-  .ac-item .ac-y { font-size: 11px; color: var(--cream-dim); }
-  .rec-form button {
-    background: var(--cream); color: #0b0b0b; border: none; padding: 12px 24px;
+  .search-form input:focus { border-color: var(--cream-dim); background: var(--panel2); }
+  .search-form input::placeholder { color: rgba(181,174,154,0.5); }
+  .btn-solid {
+    background: var(--cream); color: #0b0b0b; border: 1px solid var(--cream); padding: 12px 26px;
     font-family: var(--sans); font-weight: 600; font-size: 12px; cursor: pointer;
     letter-spacing: 0.12em; text-transform: uppercase; transition: opacity .15s;
   }
-  .rec-form button:hover { opacity: 0.85; }
+  .btn-solid:hover { opacity: 0.85; }
+  .btn-ghost {
+    background: none; border: 1px solid var(--cream-faint); color: var(--cream-dim);
+    padding: 12px 20px; font-family: var(--sans); font-size: 12px; cursor: pointer;
+    letter-spacing: 0.1em; text-transform: uppercase; transition: all .15s;
+  }
+  .btn-ghost:hover { color: var(--cream); border-color: var(--cream-dim); }
 
-  /* ---------- Rec cards ---------- */
+  .search-hint { color: rgba(181,174,154,0.55); font-size: 11.5px; margin: -8px 0 18px; letter-spacing: 0.03em; }
+
+  /* resultados */
+  .results-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+    gap: 12px; margin-bottom: 26px;
+  }
+  .res-card {
+    border: 1px solid var(--cream-faint); background: var(--panel); cursor: pointer;
+    overflow: hidden; animation: rise .3s ease both;
+    transition: border-color .15s, transform .15s;
+  }
+  .res-card:nth-child(2) { animation-delay: .03s; } .res-card:nth-child(3) { animation-delay: .06s; }
+  .res-card:nth-child(4) { animation-delay: .09s; } .res-card:nth-child(5) { animation-delay: .12s; }
+  .res-card:hover { border-color: var(--gold); transform: translateY(-3px); }
+  .res-poster {
+    aspect-ratio: 2/3; background: #000 center/cover no-repeat;
+    filter: grayscale(1); transition: filter .2s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .res-card:hover .res-poster { filter: grayscale(0); }
+  .res-poster .ph { font-family: var(--serif); font-size: 30px; font-weight: 900; color: rgba(232,226,208,0.14); }
+  .res-info { padding: 8px 9px 10px; border-top: 1px solid rgba(232,226,208,0.07); }
+  .res-t { font-size: 12px; font-weight: 500; line-height: 1.3; }
+  .res-y { font-size: 10.5px; color: var(--cream-dim); margin-top: 2px; }
+
+  .no-res {
+    border: 1px dashed var(--cream-faint); padding: 22px; text-align: center;
+    color: var(--cream-dim); font-size: 13px; margin-bottom: 26px;
+    display: flex; flex-direction: column; gap: 14px; align-items: center;
+  }
+  .no-res .btn-ghost { padding: 9px 16px; font-size: 11px; }
+
+  /* panel de confirmación */
+  .picked {
+    border: 1px solid var(--gold); background: var(--panel);
+    padding: 18px; margin-bottom: 26px; animation: rise .3s ease both;
+    display: flex; gap: 18px; flex-wrap: wrap;
+  }
+  .picked-poster {
+    width: 84px; aspect-ratio: 2/3; flex: none;
+    background: #000 center/cover no-repeat; filter: grayscale(1);
+    border: 1px solid var(--cream-faint);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .picked-poster .ph { font-family: var(--serif); font-size: 26px; font-weight: 900; color: rgba(232,226,208,0.14); }
+  .picked-main { flex: 1; min-width: 240px; display: flex; flex-direction: column; gap: 8px; }
+  .picked-title { font-family: var(--serif); font-size: 21px; font-weight: 700; line-height: 1.2; }
+  .picked-title .y { color: var(--gold); font-size: 15px; font-weight: 500; font-style: italic; margin-left: 6px; }
+  .picked-sub { color: var(--cream-dim); font-size: 12px; min-height: 15px; }
+  .picked-main input {
+    background: var(--panel2); border: 1px solid var(--cream-faint); color: var(--cream);
+    padding: 11px 13px; font-family: var(--sans); font-size: 13px; outline: none; width: 100%;
+    transition: border-color .15s;
+  }
+  .picked-main input:focus { border-color: var(--cream-dim); }
+  .picked-main input::placeholder { color: rgba(181,174,154,0.5); }
+  .picked-actions { display: flex; gap: 10px; margin-top: 2px; }
+
+  /* ---------- Cards de recomendación ---------- */
   .rec {
     border: 1px solid var(--cream-faint); background: var(--panel);
-    padding: 18px 20px; margin-bottom: 12px; position: relative;
+    padding: 16px; margin-bottom: 12px; position: relative;
+    display: flex; gap: 16px; animation: rise .35s ease both;
+    transition: border-color .2s;
   }
-  .rec.next-pick { border-color: var(--gold); }
+  .rec:hover { border-color: rgba(232,226,208,0.3); }
+  .rec.next-pick { border-color: var(--gold); background: linear-gradient(180deg, rgba(201,163,92,0.05), transparent 45%), var(--panel); }
   .next-badge {
-    position: absolute; top: -9px; left: 16px;
+    position: absolute; top: -9px; left: 14px;
     background: var(--gold); color: #0b0b0b; font-size: 10px; font-weight: 600;
     letter-spacing: 0.15em; text-transform: uppercase; padding: 2px 10px;
   }
+  .rec-poster {
+    width: 64px; aspect-ratio: 2/3; flex: none; align-self: flex-start;
+    background: #000 center/cover no-repeat; filter: grayscale(1);
+    border: 1px solid rgba(232,226,208,0.1);
+    display: flex; align-items: center; justify-content: center;
+    transition: filter .2s;
+  }
+  .rec:hover .rec-poster { filter: grayscale(0.35); }
+  .rec-poster .ph { font-family: var(--serif); font-size: 22px; font-weight: 900; color: rgba(232,226,208,0.14); }
+  .rec-main { flex: 1; min-width: 0; }
   .rec-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
-  .rec-title { font-family: var(--serif); font-size: 20px; font-weight: 700; line-height: 1.2; }
+  .rec-title { font-family: var(--serif); font-size: 19px; font-weight: 700; line-height: 1.2; }
   .rec-meta { font-size: 12px; color: var(--cream-dim); margin-top: 4px; }
   .rec-meta b { color: var(--cream); font-weight: 500; }
-  .rec-comment { font-size: 13px; color: var(--cream-dim); font-style: italic; margin-top: 8px; line-height: 1.5; }
+  .rec-comment { font-size: 13px; color: var(--cream-dim); font-style: italic; margin-top: 7px; line-height: 1.5; }
   .score {
-    font-family: var(--serif); font-size: 30px; font-weight: 900; min-width: 52px;
-    text-align: center; line-height: 1;
+    font-family: var(--serif); font-size: 28px; font-weight: 900; min-width: 50px;
+    text-align: center; line-height: 1; flex: none;
   }
-  .score.pos { color: var(--cream); } .score.neg { color: var(--red); } .score.zero { color: var(--cream-dim); }
+  .score.pos { color: var(--cream); } .score.neg { color: var(--red); } .score.zero { color: rgba(181,174,154,0.5); }
   .score small { display: block; font-family: var(--sans); font-size: 9px; font-weight: 400; color: var(--cream-dim); letter-spacing: 0.15em; text-transform: uppercase; margin-top: 4px; }
 
-  .rec-actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; align-items: center; }
+  .rec-actions { display: flex; gap: 8px; margin-top: 13px; flex-wrap: wrap; align-items: center; }
   .vote-btn {
     background: none; border: 1px solid var(--cream-faint); color: var(--cream-dim);
-    padding: 6px 14px; cursor: pointer; font-family: var(--sans); font-size: 12px;
+    padding: 7px 15px; cursor: pointer; font-family: var(--sans); font-size: 12px;
     font-weight: 600; transition: all .15s; display: inline-flex; align-items: center; gap: 6px;
   }
   .vote-btn:hover { border-color: var(--cream-dim); color: var(--cream); }
@@ -186,12 +239,12 @@
   .vote-btn.active-seen { background: var(--cream); border-color: var(--cream); color: #0b0b0b; }
   .del-btn {
     margin-left: auto; background: none; border: 1px solid var(--cream-faint);
-    color: var(--cream-dim); padding: 6px 12px; cursor: pointer; font-size: 11px;
+    color: var(--cream-dim); padding: 7px 12px; cursor: pointer; font-size: 11px;
     letter-spacing: 0.08em; text-transform: uppercase; transition: all .15s;
   }
   .del-btn:hover { border-color: var(--red); color: var(--red); }
 
-  .voters { display: flex; gap: 6px; margin-top: 12px; flex-wrap: wrap; }
+  .voters { display: flex; gap: 6px; margin-top: 11px; flex-wrap: wrap; }
   .chip {
     font-size: 10px; padding: 3px 9px; border: 1px solid var(--cream-faint);
     color: var(--cream-dim); letter-spacing: 0.05em; display: inline-flex; gap: 5px; align-items: center;
@@ -201,13 +254,18 @@
   .chip .sym { font-weight: 700; }
   .chip.up .sym { color: var(--green); } .chip.down .sym { color: var(--red); }
 
-  .empty { text-align: center; color: var(--cream-dim); font-style: italic; font-family: var(--serif); font-size: 16px; padding: 32px; border: 1px dashed var(--cream-faint); }
+  .empty {
+    text-align: center; color: var(--cream-dim); font-family: var(--serif);
+    font-style: italic; font-size: 16px; padding: 40px 24px;
+    border: 1px dashed var(--cream-faint); line-height: 1.6;
+  }
+  .empty .sub { font-family: var(--sans); font-style: normal; font-size: 11.5px; color: rgba(181,174,154,0.6); display: block; margin-top: 6px; }
 
   /* ---------- Footer ---------- */
   footer {
-    text-align: center; color: rgba(181,174,154,0.5); font-size: 11px;
+    text-align: center; color: rgba(181,174,154,0.45); font-size: 10.5px;
     letter-spacing: 0.15em; text-transform: uppercase; display: flex;
-    justify-content: center; gap: 18px; align-items: center;
+    justify-content: center; gap: 16px; align-items: center;
   }
   footer button {
     background: none; border: 1px solid var(--cream-faint); color: var(--cream-dim);
@@ -216,7 +274,7 @@
   footer button:hover { color: var(--cream); }
   .mode-warn { color: var(--gold); }
 
-  /* ---------- Identity modal ---------- */
+  /* ---------- Modal identidad ---------- */
   .modal-overlay {
     position: fixed; inset: 0; background: rgba(0,0,0,0.88); z-index: 50;
     display: flex; align-items: center; justify-content: center; backdrop-filter: blur(3px);
@@ -224,7 +282,7 @@
   .modal-overlay.hidden { display: none; }
   .modal {
     background: var(--panel); border: 1px solid var(--cream-faint);
-    padding: 44px 48px; text-align: center; max-width: 90vw;
+    padding: 44px 48px; text-align: center; max-width: 90vw; animation: rise .3s ease both;
   }
   .modal h3 { font-family: var(--serif); font-size: 24px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 6px; }
   .modal p { color: var(--cream-dim); font-size: 13px; margin-bottom: 28px; }
@@ -236,10 +294,16 @@
   }
   .modal .people button:hover { background: var(--cream); color: #0b0b0b; }
 
-  @media (max-width: 560px) {
+  .hidden { display: none !important; }
+
+  @media (max-width: 640px) {
+    .members { display: none; }
+    .brand { font-size: 14px; letter-spacing: 0.1em; }
     .modal .people { grid-template-columns: 1fr; }
+    .rec { flex-direction: row; }
     .rec-head { flex-direction: column-reverse; }
     .score { text-align: left; }
+    .results-grid { grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); }
   }
 </style>
 </head>
@@ -253,21 +317,21 @@
   </div>
 </div>
 
-<div class="wrap">
-  <header>
-    <div class="logo-frame">
-      <img src="logo.png" alt="Miércoles de Cintas" onerror="this.remove(); document.querySelector('.logo-frame').insertAdjacentHTML('beforeend','<span class=logo-fallback>MC</span>')">
+<div class="topbar">
+  <div class="topbar-in">
+    <div class="logo-mini">
+      <img src="logo.png" alt="" onerror="this.remove(); document.querySelector('.logo-mini').insertAdjacentHTML('beforeend','<span class=logo-fallback>MC</span>')">
     </div>
-    <h1>Miércoles<br>de Cintas</h1>
-    <div class="subtitle" id="membersLine"></div>
-    <div class="divider"></div>
-  </header>
-
-  <div class="identity">
-    <span>Sos <b id="whoami">—</b></span>
-    <button onclick="openIdentity()">cambiar</button>
+    <div class="brand">Miércoles <span class="amp">de</span> Cintas</div>
+    <div class="members" id="membersLine"></div>
+    <div class="identity">
+      <span>Sos <b id="whoami">—</b></span>
+      <button onclick="openIdentity()">cambiar</button>
+    </div>
   </div>
+</div>
 
+<div class="wrap">
   <section>
     <h2>Ya vistas <span class="count" id="watchedCount"></span></h2>
     <div class="watched-grid" id="watchedGrid"></div>
@@ -275,15 +339,33 @@
 
   <section>
     <h2>Recomendaciones <span class="count" id="recCount"></span></h2>
-    <form class="rec-form" id="recForm" autocomplete="off">
-      <div class="ac-wrap">
-        <input id="recTitle" placeholder="Buscá la película…" maxlength="120" required>
-        <span class="ac-badge hidden" id="acBadge"></span>
-        <div class="ac-list hidden" id="acList"></div>
-      </div>
-      <input id="recComment" placeholder="Por qué la banco (opcional)" maxlength="200">
-      <button type="submit">Proponer</button>
+
+    <form class="search-form" id="searchForm" autocomplete="off">
+      <input id="q" placeholder="Buscá por título o keyword — ej: godfather, casino, heat…" maxlength="120">
+      <button type="submit" class="btn-solid">Buscar</button>
     </form>
+    <div class="search-hint">Elegí de los resultados para proponer con ficha completa (director, ratings, póster).</div>
+
+    <div class="results-grid hidden" id="resultsGrid"></div>
+
+    <div class="no-res hidden" id="noRes">
+      <span>OMDb no encontró nada para “<b id="noResQ"></b>”.</span>
+      <button class="btn-ghost" onclick="pickFreeText()">Proponerla igual, a mano</button>
+    </div>
+
+    <div class="picked hidden" id="picked">
+      <div class="picked-poster" id="pickedPoster"><span class="ph">?</span></div>
+      <form class="picked-main" id="pickedForm">
+        <div class="picked-title" id="pickedTitle"></div>
+        <div class="picked-sub" id="pickedSub"></div>
+        <input id="comment" placeholder="Por qué la banco (opcional)" maxlength="200">
+        <div class="picked-actions">
+          <button type="submit" class="btn-solid">Proponer</button>
+          <button type="button" class="btn-ghost" onclick="cancelPick()">✕ Cancelar</button>
+        </div>
+      </form>
+    </div>
+
     <div id="recList"></div>
   </section>
 
@@ -387,10 +469,11 @@ const supaStore = {
 
 const store = useSupabase ? supaStore : localStore;
 
-/* ---------------- OMDb ratings ---------------- */
+/* ---------------- OMDb ---------------- */
+// v2 del cache: agrega director
 async function getRatings({ t, y, i }) {
   if (!CONFIG.OMDB_API_KEY) return null;
-  const key = i ? "omdb:i:" + i : "omdb:" + t.toLowerCase() + (y ? ":" + y : "");
+  const key = i ? "omdb2:i:" + i : "omdb2:" + t.toLowerCase() + (y ? ":" + y : "");
   const cached = localStorage.getItem(key);
   if (cached) return JSON.parse(cached);
   try {
@@ -403,6 +486,7 @@ async function getRatings({ t, y, i }) {
         imdb: d.imdbRating && d.imdbRating !== "N/A" ? d.imdbRating : null,
         rt: (d.Ratings || []).find(r => r.Source === "Rotten Tomatoes")?.Value || null,
         year: d.Year !== "N/A" ? d.Year : null,
+        director: d.Director && d.Director !== "N/A" ? d.Director : null,
         poster: d.Poster && d.Poster !== "N/A" ? d.Poster : null,
       };
     }
@@ -428,10 +512,19 @@ async function enrichRatings() {
     if (rt) rt.innerHTML = ratingsHtml(r);
     const yr = el.querySelector(".year");
     if (yr && r.year) yr.textContent = r.year;
+    const dir = el.querySelector(".dir");
+    if (dir && r.director) dir.textContent = r.director;
+    const dirInline = el.querySelector(".dir-inline");
+    if (dirInline && r.director) dirInline.textContent = `Dir. ${r.director} · `;
     const poster = el.querySelector(".poster");
     if (poster && r.poster) {
       poster.style.backgroundImage = `url("${r.poster}")`;
       poster.querySelector(".noposter")?.remove();
+    }
+    const rp = el.querySelector(".rec-poster");
+    if (rp && r.poster) {
+      rp.style.backgroundImage = `url("${r.poster}")`;
+      rp.querySelector(".ph")?.remove();
     }
   }));
 }
@@ -440,10 +533,11 @@ async function enrichRatings() {
 function renderWatched() {
   $("watchedCount").textContent = `(${CONFIG.WATCHED.length})`;
   $("watchedGrid").innerHTML = CONFIG.WATCHED.map((m, i) => `
-    <div class="watched-card" data-omdb='${esc(JSON.stringify({ t: m.search || m.title, y: m.y }))}'>
+    <div class="watched-card" style="animation-delay:${i * 0.05}s" data-omdb='${esc(JSON.stringify({ t: m.search || m.title, y: m.y }))}'>
       <div class="poster"><span class="ep">Nº ${i + 1}</span><span class="noposter">${esc(m.title[0])}</span></div>
       <div class="info">
         <div class="title">${esc(m.title)}</div>
+        <div class="dir"></div>
         <div class="year">${m.y || ""}</div>
         <div class="ratings"></div>
       </div>
@@ -458,7 +552,8 @@ function renderRecs() {
   const list = $("recList");
   $("recCount").textContent = `(${state.recs.length})`;
   if (!state.recs.length) {
-    list.innerHTML = `<div class="empty">Todavía nadie propuso nada. Rompé el hielo.</div>`;
+    list.innerHTML = `<div class="empty">Todavía nadie propuso nada. Rompé el hielo.
+      <span class="sub">Buscá arriba y elegí una película para el próximo miércoles.</span></div>`;
     return;
   }
   const scored = state.recs.map(r => {
@@ -477,24 +572,27 @@ function renderRecs() {
           ${v.vote ? `<span class="sym">${v.vote > 0 ? "+1" : "−1"}</span>` : ""}
           ${esc(v.voter)}${v.seen ? " 👁" : ""}</span>`).join("");
     return `
-    <div class="rec ${isNext ? "next-pick" : ""}" data-omdb='${esc(JSON.stringify(r.imdb_id ? { t: r.title, i: r.imdb_id } : { t: r.title }))}'>
+    <div class="rec ${isNext ? "next-pick" : ""}" style="animation-delay:${idx * 0.04}s" data-omdb='${esc(JSON.stringify(r.imdb_id ? { t: r.title, i: r.imdb_id } : { t: r.title }))}'>
       ${isNext ? `<span class="next-badge">Próxima cinta</span>` : ""}
-      <div class="rec-head">
-        <div>
-          <div class="rec-title">${esc(r.title)}</div>
-          <div class="rec-meta">${r.year ? esc(r.year) + " · " : ""}propuesta de <b>${esc(r.author)}</b></div>
-          ${r.comment ? `<div class="rec-comment">“${esc(r.comment)}”</div>` : ""}
-          <div class="ratings"></div>
+      <div class="rec-poster"><span class="ph">${esc(r.title[0])}</span></div>
+      <div class="rec-main">
+        <div class="rec-head">
+          <div>
+            <div class="rec-title">${esc(r.title)}</div>
+            <div class="rec-meta">${r.year ? esc(r.year) + " · " : ""}<span class="dir-inline"></span>propuesta de <b>${esc(r.author)}</b></div>
+            ${r.comment ? `<div class="rec-comment">“${esc(r.comment)}”</div>` : ""}
+            <div class="ratings"></div>
+          </div>
+          <div class="score ${cls}">${r._score > 0 ? "+" : ""}${r._score}<small>votos</small></div>
         </div>
-        <div class="score ${cls}">${r._score > 0 ? "+" : ""}${r._score}<small>votos</small></div>
+        <div class="rec-actions">
+          <button class="vote-btn ${mine.vote === 1 ? "active-up" : ""}" onclick="castVote('${r.id}', 1)">+1</button>
+          <button class="vote-btn ${mine.vote === -1 ? "active-down" : ""}" onclick="castVote('${r.id}', -1)">−1</button>
+          <button class="vote-btn ${mine.seen ? "active-seen" : ""}" onclick="toggleSeen('${r.id}')">👁 Ya la vi</button>
+          ${r.author === user ? `<button class="del-btn" onclick="deleteRec('${r.id}')">✕ eliminar</button>` : ""}
+        </div>
+        ${chips ? `<div class="voters">${chips}</div>` : ""}
       </div>
-      <div class="rec-actions">
-        <button class="vote-btn ${mine.vote === 1 ? "active-up" : ""}" onclick="castVote('${r.id}', 1)">+1</button>
-        <button class="vote-btn ${mine.vote === -1 ? "active-down" : ""}" onclick="castVote('${r.id}', -1)">−1</button>
-        <button class="vote-btn ${mine.seen ? "active-seen" : ""}" onclick="toggleSeen('${r.id}')">👁 Ya la vi</button>
-        ${r.author === user ? `<button class="del-btn" onclick="deleteRec('${r.id}')">✕ eliminar</button>` : ""}
-      </div>
-      ${chips ? `<div class="voters">${chips}</div>` : ""}
     </div>`;
   }).join("");
 }
@@ -521,80 +619,115 @@ async function refresh(manual = false) {
   }
 }
 
-/* ---------------- Autocomplete ---------------- */
-let acSelected = null, acResults = [], acIndex = -1, acTimer = null;
-const acCache = new Map();
-const acListEl = $("acList"), acBadge = $("acBadge"), recTitleEl = $("recTitle");
+/* ---------------- Búsqueda ---------------- */
+let picked = null;          // {Title, Year, imdbID, Poster} o {Title, freeText:true}
+let sResults = [], sTimer = null, lastQuery = "";
+const sCache = new Map();
 
-function hideAc() { acListEl.classList.add("hidden"); acResults = []; acIndex = -1; }
-function setBadge() {
-  if (acSelected) {
-    acBadge.textContent = `✓ ${acSelected.Year}`;
-    acBadge.classList.remove("hidden");
-  } else acBadge.classList.add("hidden");
-}
-function selectMovie(m) {
-  acSelected = m;
-  recTitleEl.value = m.Title;
-  setBadge();
-  hideAc();
-  $("recComment").focus();
-}
-function renderAc() {
-  if (!acResults.length) return hideAc();
-  acListEl.innerHTML = acResults.map((m, i) => `
-    <div class="ac-item ${i === acIndex ? "active" : ""}" data-i="${i}">
-      ${m.Poster && m.Poster !== "N/A" ? `<img src="${esc(m.Poster)}" alt="" loading="lazy">` : `<div class="ac-noposter">·</div>`}
-      <div><div class="ac-t">${esc(m.Title)}</div><div class="ac-y">${esc(m.Year)}</div></div>
-    </div>`).join("");
-  acListEl.classList.remove("hidden");
-}
-async function searchMovies(q) {
-  const key = q.toLowerCase();
-  let results = acCache.get(key);
+async function doSearch(query) {
+  const q = query.trim();
+  if (q.length < 2) return;
+  lastQuery = q;
+  cancelPick(false);
+  let results = sCache.get(q.toLowerCase());
   if (results === undefined) {
     try {
       // el "*" final hace prefix-match: "godfat*" → The Godfather
       const d = await (await fetch(`https://www.omdbapi.com/?apikey=${CONFIG.OMDB_API_KEY}&s=${encodeURIComponent(q + "*")}&type=movie`)).json();
       const seen = new Set();
       results = d.Response === "True"
-        ? d.Search.filter(m => !seen.has(m.imdbID) && seen.add(m.imdbID)).slice(0, 6)
+        ? d.Search.filter(m => !seen.has(m.imdbID) && seen.add(m.imdbID))
         : [];
     } catch { results = []; }
-    acCache.set(key, results);
+    sCache.set(q.toLowerCase(), results);
   }
-  if (recTitleEl.value.trim().toLowerCase() !== key) return; // respuesta vieja
-  acResults = results;
-  acIndex = results.length ? 0 : -1;
-  renderAc();
+  if ($("q").value.trim() !== q) return;   // respuesta vieja
+  sResults = results;
+  renderResults();
 }
-acListEl.addEventListener("mousedown", (e) => {
-  const item = e.target.closest(".ac-item");
-  if (item) { e.preventDefault(); selectMovie(acResults[+item.dataset.i]); }
-});
-recTitleEl.addEventListener("input", () => {
-  acSelected = null; setBadge();
-  clearTimeout(acTimer);
-  const q = recTitleEl.value.trim();
-  if (q.length < 3 || !CONFIG.OMDB_API_KEY) return hideAc();
-  acTimer = setTimeout(() => searchMovies(q), 300);
-});
-recTitleEl.addEventListener("blur", () => setTimeout(hideAc, 150));
-recTitleEl.addEventListener("keydown", (e) => {
-  if (acListEl.classList.contains("hidden")) return;
-  if (e.key === "ArrowDown") { e.preventDefault(); acIndex = Math.min(acIndex + 1, acResults.length - 1); renderAc(); }
-  else if (e.key === "ArrowUp") { e.preventDefault(); acIndex = Math.max(acIndex - 1, 0); renderAc(); }
-  else if (e.key === "Enter" && acIndex >= 0) { e.preventDefault(); selectMovie(acResults[acIndex]); }
-  else if (e.key === "Escape") hideAc();
+
+function renderResults() {
+  const grid = $("resultsGrid"), noRes = $("noRes");
+  if (!sResults.length) {
+    grid.classList.add("hidden");
+    $("noResQ").textContent = lastQuery;
+    noRes.classList.remove("hidden");
+    return;
+  }
+  noRes.classList.add("hidden");
+  grid.innerHTML = sResults.map((m, i) => `
+    <div class="res-card" data-i="${i}">
+      <div class="res-poster" ${m.Poster && m.Poster !== "N/A" ? `style="background-image:url('${esc(m.Poster)}')"` : ""}>
+        ${m.Poster && m.Poster !== "N/A" ? "" : `<span class="ph">${esc(m.Title[0])}</span>`}
+      </div>
+      <div class="res-info">
+        <div class="res-t">${esc(m.Title)}</div>
+        <div class="res-y">${esc(m.Year)}</div>
+      </div>
+    </div>`).join("");
+  grid.classList.remove("hidden");
+}
+
+function pick(m) {
+  picked = m;
+  $("resultsGrid").classList.add("hidden");
+  $("noRes").classList.add("hidden");
+  const pp = $("pickedPoster");
+  pp.style.backgroundImage = m.Poster && m.Poster !== "N/A" ? `url("${m.Poster}")` : "";
+  pp.innerHTML = m.Poster && m.Poster !== "N/A" ? "" : `<span class="ph">${esc(m.Title[0])}</span>`;
+  $("pickedTitle").innerHTML = `${esc(m.Title)}${m.Year ? `<span class="y">${esc(m.Year)}</span>` : ""}`;
+  $("pickedSub").textContent = m.freeText ? "Propuesta manual — sin ficha de OMDb" : "…";
+  $("picked").classList.remove("hidden");
+  $("comment").focus();
+  if (m.imdbID) {
+    getRatings({ t: m.Title, i: m.imdbID }).then(r => {
+      if (!r || picked?.imdbID !== m.imdbID) return;
+      const bits = [];
+      if (r.director) bits.push(`Dir. ${r.director}`);
+      if (r.imdb) bits.push(`★ IMDb ${r.imdb}`);
+      if (r.rt) bits.push(`🍅 ${r.rt}`);
+      $("pickedSub").textContent = bits.join("  ·  ") || "";
+    });
+  }
+}
+
+function pickFreeText() {
+  pick({ Title: lastQuery, freeText: true });
+}
+
+function cancelPick(reshow = true) {
+  picked = null;
+  $("picked").classList.add("hidden");
+  $("comment").value = "";
+  if (reshow && sResults.length) $("resultsGrid").classList.remove("hidden");
+}
+
+$("resultsGrid").addEventListener("click", (e) => {
+  const card = e.target.closest(".res-card");
+  if (card) pick(sResults[+card.dataset.i]);
 });
 
-$("recForm").addEventListener("submit", async (e) => {
+$("searchForm").addEventListener("submit", (e) => {
+  e.preventDefault();
+  clearTimeout(sTimer);
+  doSearch($("q").value);
+});
+
+$("q").addEventListener("input", () => {
+  clearTimeout(sTimer);
+  const q = $("q").value.trim();
+  if (q.length < 3) return;
+  sTimer = setTimeout(() => doSearch(q), 350);
+});
+
+/* ---------------- Proponer ---------------- */
+$("pickedForm").addEventListener("submit", async (e) => {
   e.preventDefault();
   if (!user) return openIdentity();
-  const title = $("recTitle").value.trim();
-  const comment = $("recComment").value.trim();
-  if (!title) return;
-  if (acSelected && state.recs.some(x => x.imdb_id && x.imdb_id === acSelected.imdbID)) {
+  if (!picked) return;
+  const title = picked.Title.trim();
+  const comment = $("comment").value.trim();
+  if (picked.imdbID && state.recs.some(x => x.imdb_id && x.imdb_id === picked.imdbID)) {
     alert("Esa ya está propuesta, gil.");
     return;
   }
@@ -606,13 +739,16 @@ $("recForm").addEventListener("submit", async (e) => {
   const rec = {
     id: crypto.randomUUID(), title, comment: comment || null, author: user,
     created_at: new Date().toISOString(),
-    imdb_id: acSelected?.imdbID || null,
-    year: acSelected?.Year || null,
+    imdb_id: picked.imdbID || null,
+    year: picked.Year || null,
   };
   try {
     await store.addRec(rec);
-    $("recTitle").value = ""; $("recComment").value = "";
-    acSelected = null; setBadge(); hideAc();
+    cancelPick(false);
+    $("q").value = "";
+    sResults = [];
+    $("resultsGrid").classList.add("hidden");
+    $("noRes").classList.add("hidden");
     await refresh();
   } catch (err) { alert("No se pudo guardar: " + err.message); }
 });
