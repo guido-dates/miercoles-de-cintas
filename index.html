@@ -69,6 +69,29 @@
 
   .wrap { max-width: 980px; margin: 0 auto; padding: 36px 20px 80px; }
 
+  /* ---------- Próxima función ---------- */
+  .next-strip {
+    text-align: center; padding: 9px 14px; font-size: 11px;
+    letter-spacing: 0.22em; text-transform: uppercase; color: var(--cream-dim);
+    border-bottom: 1px solid rgba(232,226,208,0.08);
+    background: linear-gradient(180deg, rgba(201,163,92,0.05), transparent);
+  }
+  .next-strip b { color: var(--gold); font-weight: 600; }
+  .next-strip .hoy { color: var(--gold); font-weight: 600; }
+
+  .wdel {
+    position: absolute; top: 6px; right: 6px; z-index: 3;
+    background: rgba(0,0,0,0.75); border: 1px solid var(--cream-faint); color: var(--cream-dim);
+    width: 22px; height: 22px; font-size: 10px; cursor: pointer; opacity: 0;
+    transition: opacity .15s, color .15s, border-color .15s;
+  }
+  .watched-card:hover .wdel { opacity: 1; }
+  .wdel:hover { color: var(--red); border-color: var(--red); }
+  @media (hover: none) { .wdel { opacity: 0.85; } }
+
+  .btn-ghost.gold { border-color: rgba(201,163,92,0.5); color: var(--gold); }
+  .btn-ghost.gold:hover { background: var(--gold); border-color: var(--gold); color: #0b0b0b; }
+
   /* ---------- Secciones ---------- */
   section { margin-bottom: 56px; }
   h2 {
@@ -368,6 +391,8 @@
   </div>
 </div>
 
+<div class="next-strip" id="nextStrip"></div>
+
 <div class="wrap">
   <section>
     <h2>Ya vistas <span class="count" id="watchedCount"></span></h2>
@@ -398,7 +423,8 @@
         <input id="comment" placeholder="Por qué la banco (opcional)" maxlength="200">
         <div class="picked-actions">
           <button type="submit" class="btn-solid">Proponer</button>
-          <button type="button" class="btn-ghost" onclick="cancelPick()">✕ Cancelar</button>
+          <button type="button" class="btn-ghost gold" onclick="addWatchedFromPick()">✔ La vimos</button>
+          <button type="button" class="btn-ghost" onclick="cancelPick()">✕</button>
         </div>
       </form>
     </div>
@@ -424,12 +450,9 @@ const CONFIG = {
 
   FRIENDS: ["Marcos", "Tomi", "Juan", "Guido"],
 
-  // Películas ya vistas. `search` es el título para buscar en OMDb (en inglés funciona mejor).
-  WATCHED: [
-    { title: "Obsession",      search: "Obsession" },
-    { title: "Disclosure Day", search: "Disclosure Day" },
-    { title: "El Padrino",     search: "The Godfather", y: 1972 },
-  ],
+  // Ritmo del cine club: cada PERIOD_DAYS días desde ANCHOR_DATE (una función que ya pasó).
+  ANCHOR_DATE: "2026-08-12",
+  PERIOD_DAYS: 14,
 };
 /* ========================================== */
 
@@ -437,7 +460,7 @@ const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const useSupabase = !!(CONFIG.SUPABASE_URL && CONFIG.SUPABASE_ANON_KEY);
 
-let state = { recs: [], votes: [] };
+let state = { recs: [], votes: [], watched: [] };
 let user = localStorage.getItem("mdc_user") || null;
 
 /* ---------------- Stores ---------------- */
@@ -446,6 +469,7 @@ const localStore = {
     return {
       recs:  JSON.parse(localStorage.getItem("mdc_recs")  || "[]"),
       votes: JSON.parse(localStorage.getItem("mdc_votes") || "[]"),
+      watched: JSON.parse(localStorage.getItem("mdc_watched") || "[]"),
     };
   },
   async addRec(rec) {
@@ -465,6 +489,15 @@ const localStore = {
     if (i >= 0) votes[i] = v; else votes.push(v);
     localStorage.setItem("mdc_votes", JSON.stringify(votes));
   },
+  async addWatched(w) {
+    const ws = JSON.parse(localStorage.getItem("mdc_watched") || "[]");
+    ws.push(w);
+    localStorage.setItem("mdc_watched", JSON.stringify(ws));
+  },
+  async deleteWatched(id) {
+    const ws = JSON.parse(localStorage.getItem("mdc_watched") || "[]").filter(x => x.id !== id);
+    localStorage.setItem("mdc_watched", JSON.stringify(ws));
+  },
 };
 
 const supaStore = {
@@ -483,17 +516,24 @@ const supaStore = {
     return text ? JSON.parse(text) : null;
   },
   async load() {
-    const [recs, votes] = await Promise.all([
+    const [recs, votes, watched] = await Promise.all([
       this._fetch("recs?select=*&order=created_at.asc"),
       this._fetch("votes?select=*"),
+      this._fetch("watched?select=*&order=position.asc,created_at.asc"),
     ]);
-    return { recs, votes };
+    return { recs, votes, watched };
   },
   async addRec(rec) {
     await this._fetch("recs", { method: "POST", body: JSON.stringify(rec) });
   },
   async deleteRec(id) {
     await this._fetch(`recs?id=eq.${encodeURIComponent(id)}`, { method: "DELETE" });
+  },
+  async addWatched(w) {
+    await this._fetch("watched", { method: "POST", body: JSON.stringify(w) });
+  },
+  async deleteWatched(id) {
+    await this._fetch(`watched?id=eq.${encodeURIComponent(id)}`, { method: "DELETE" });
   },
   async upsertVote(v) {
     await this._fetch("votes", {
@@ -568,14 +608,19 @@ async function enrichRatings() {
 
 /* ---------------- Render ---------------- */
 function renderWatched() {
-  $("watchedCount").textContent = `(${CONFIG.WATCHED.length})`;
-  $("watchedGrid").innerHTML = CONFIG.WATCHED.map((m, i) => `
-    <div class="watched-card" style="animation-delay:${i * 0.05}s" data-omdb='${esc(JSON.stringify({ t: m.search || m.title, y: m.y }))}'>
-      <div class="poster"><span class="ep">Nº ${i + 1}</span><span class="noposter">${esc(m.title[0])}</span></div>
+  const ws = state.watched;
+  $("watchedCount").textContent = `(${ws.length})`;
+  if (!ws.length) {
+    $("watchedGrid").innerHTML = `<div class="empty" style="grid-column:1/-1">Todavía no hay funciones registradas.</div>`;
+    return;
+  }
+  $("watchedGrid").innerHTML = ws.map((m, i) => `
+    <div class="watched-card" style="animation-delay:${i * 0.05}s" data-omdb='${esc(JSON.stringify(m.imdb_id ? { t: m.title, i: m.imdb_id } : { t: m.title, y: m.year || undefined }))}'>
+      <div class="poster"><span class="ep">Nº ${i + 1}</span>${m.added_by === user ? `<button class="wdel" title="sacar de vistas" onclick="deleteWatched('${m.id}')">✕</button>` : ""}<span class="noposter">${esc(m.title[0])}</span></div>
       <div class="info">
         <div class="title">${esc(m.title)}</div>
         <div class="dir"></div>
-        <div class="year">${m.y || ""}</div>
+        <div class="year">${m.year || ""}</div>
         <div class="ratings"></div>
       </div>
     </div>`).join("");
@@ -634,12 +679,29 @@ function renderRecs() {
   }).join("");
 }
 
+/* ---------------- Próxima función ---------------- */
+function renderNext() {
+  const anchor = new Date(CONFIG.ANCHOR_DATE + "T00:00:00");
+  const today = new Date(); today.setHours(0, 0, 0, 0);
+  const diffDays = Math.floor((today - anchor) / 86400000);
+  const k = Math.max(0, Math.ceil(diffDays / CONFIG.PERIOD_DAYS));
+  const next = new Date(anchor);
+  next.setDate(anchor.getDate() + k * CONFIG.PERIOD_DAYS);
+  const left = Math.round((next - today) / 86400000);
+  const fecha = next.toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+  const n = state.watched.length + 1;
+  $("nextStrip").innerHTML = left === 0
+    ? `Función <b>Nº ${n}</b> · <span class="hoy">¡es hoy!</span> 🎬`
+    : `Función <b>Nº ${n}</b> · ${esc(fecha)} · <b>${left === 1 ? "falta 1 día" : `faltan ${left} días`}</b>`;
+}
+
 function render() {
   $("whoami").textContent = user || "—";
   $("membersLine").textContent = CONFIG.FRIENDS.join(" · ");
   $("modeLabel").innerHTML = useSupabase
     ? "modo compartido"
     : `<span class="mode-warn">modo local — configurá Supabase para compartir</span>`;
+  renderNext();
   renderWatched();
   renderRecs();
   enrichRatings();
@@ -764,11 +826,11 @@ $("pickedForm").addEventListener("submit", async (e) => {
   if (!picked) return;
   const title = picked.Title.trim();
   const comment = $("comment").value.trim();
-  if (picked.imdbID && state.recs.some(x => x.imdb_id && x.imdb_id === picked.imdbID)) {
-    alert("Esa ya está propuesta, gil.");
+  if (picked.imdbID && [...state.recs, ...state.watched].some(x => x.imdb_id && x.imdb_id === picked.imdbID)) {
+    alert("Esa ya está en la lista, gil.");
     return;
   }
-  const all = [...state.recs.map(r => r.title), ...CONFIG.WATCHED.map(w => w.title)];
+  const all = [...state.recs.map(r => r.title), ...state.watched.map(w => w.title)];
   if (all.some(t => t.toLowerCase() === title.toLowerCase())) {
     alert("Esa ya está en la lista, gil.");
     return;
@@ -789,6 +851,38 @@ $("pickedForm").addEventListener("submit", async (e) => {
     await refresh();
   } catch (err) { alert("No se pudo guardar: " + err.message); }
 });
+
+async function addWatchedFromPick() {
+  if (!user) return openIdentity();
+  if (!picked) return;
+  const title = picked.Title.trim();
+  if (state.watched.some(w => (picked.imdbID && w.imdb_id === picked.imdbID) || w.title.toLowerCase() === title.toLowerCase())) {
+    alert("Esa ya está en las vistas, gil.");
+    return;
+  }
+  const maxPos = state.watched.reduce((a, w) => Math.max(a, w.position || 0), 0);
+  const entry = {
+    id: crypto.randomUUID(), title,
+    imdb_id: picked.imdbID || null, year: picked.Year || null,
+    position: maxPos + 1, added_by: user, created_at: new Date().toISOString(),
+  };
+  try {
+    await store.addWatched(entry);
+    // si estaba propuesta, se gradúa: sale de recomendaciones
+    const rec = state.recs.find(r => (entry.imdb_id && r.imdb_id === entry.imdb_id) || r.title.toLowerCase() === title.toLowerCase());
+    if (rec) await store.deleteRec(rec.id);
+    cancelPick(false);
+    $("q").value = ""; sResults = [];
+    $("resultsGrid").classList.add("hidden"); $("noRes").classList.add("hidden");
+    await refresh();
+  } catch (err) { alert("No se pudo registrar: " + err.message); }
+}
+
+async function deleteWatched(id) {
+  if (!confirm("¿Sacar esta película de las vistas?")) return;
+  try { await store.deleteWatched(id); await refresh(); }
+  catch (err) { alert("No se pudo sacar: " + err.message); }
+}
 
 async function castVote(recId, value) {
   if (!user) return openIdentity();

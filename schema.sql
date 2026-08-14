@@ -33,3 +33,18 @@ alter table recs  add constraint recs_author_valid check (author in ('Marcos','T
 alter table recs  add constraint recs_title_len    check (char_length(title) between 1 and 120);
 alter table recs  add constraint recs_comment_len  check (comment is null or char_length(comment) <= 200);
 alter table votes add constraint votes_voter_valid check (voter in ('Marcos','Tomi','Juan','Guido'));
+
+-- Funciones ya vistas (orden = position; las de la era pre-app tienen added_by null)
+create table if not exists watched (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  imdb_id text,
+  year text,
+  position int not null,
+  added_by text,
+  created_at timestamptz not null default now()
+);
+alter table watched enable row level security;
+create policy "anon_all_watched" on watched for all using (true) with check (true);
+alter table watched add constraint watched_title_len    check (char_length(title) between 1 and 120);
+alter table watched add constraint watched_added_by_valid check (added_by is null or added_by in ('Marcos','Tomi','Juan','Guido'));
