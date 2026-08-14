@@ -1,0 +1,47 @@
+name: backup
+
+# Dump diario de la DB a la rama "backups".
+# La anon key es pública por diseño (está en index.html); RLS abierto = cualquiera
+# podría borrar la data, esto garantiza que siempre haya una copia restaurable.
+# El historial de git guarda todas las versiones; solo commitea si algo cambió.
+
+on:
+  schedule:
+    - cron: "0 9 * * *"   # 06:00 Argentina
+  workflow_dispatch:
+
+jobs:
+  dump:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    env:
+      URL: https://sdnhxripjpjaevafiguk.supabase.co
+      KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InNkbmh4cmlwanBqYWV2YWZpZ3VrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODY3MDUwMTQsImV4cCI6MjEwMjI4MTAxNH0.OTw4PUaoQ7jbmEhMY-W1gSWPjaqzBwu1ECghAQbdsOQ
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: backups
+
+      - name: Dump tablas
+        run: |
+          set -euo pipefail
+          declare -A order=(
+            [recs]="created_at.asc"
+            [votes]="rec_id.asc,voter.asc"
+            [watched]="position.asc"
+            [rec_comments]="created_at.asc"
+          )
+          for t in recs votes watched rec_comments; do
+            curl -sf "$URL/rest/v1/$t?select=*&order=${order[$t]}" \
+              -H "apikey: $KEY" -H "Authorization: Bearer $KEY" | jq -S . > "$t.json"
+          done
+
+      - name: Commit si cambió
+        run: |
+          git config user.name "backup-bot"
+          git config user.email "actions@github.com"
+          git add -A
+          git diff --cached --quiet && echo "sin cambios" && exit 0
+          git commit -m "backup $(date -u +%Y-%m-%d)"
+          git push

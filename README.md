@@ -23,7 +23,10 @@ El schema aplicado está en `schema.sql`. Las credenciales (URL + anon key) ya e
 
 > **Ojo:** el repo es público, así que la anon key + URL del proyecto son buscables (no solo "quien tenga el link").
 > La key anon es pública por diseño en cualquier sitio estático; el riesgo real es que alguien escriba en la DB.
-> Mitigado con constraints (solo los 4 nombres como autor/votante, largos limitados). Peor caso: borran la lista — no hay data sensible.
+> Mitigado con constraints (solo los 4 nombres como autor/votante, largos limitados) y **backup diario**:
+> un GitHub Action ([.github/workflows/backup.yml](.github/workflows/backup.yml)) vuelca las 4 tablas a la rama
+> [`backups`](https://github.com/guido-dates/miercoles-de-cintas/tree/backups) (06:00 AR, solo commitea si cambió;
+> el historial de git guarda todas las versiones). Restaurar = insertar esos JSON vía REST con la misma key.
 
 ### OMDb — ratings IMDb / Rotten Tomatoes — ya hecho
 
