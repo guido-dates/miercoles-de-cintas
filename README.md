@@ -1,7 +1,8 @@
 # Miércoles de Cintas 🎬
 
-Hub del cine club: películas vistas, recomendaciones y votación (+1 / −1 / 👁 Ya la vi).
-Un solo archivo (`index.html`), sin build, sin framework.
+Hub del cine club: funciones vistas, recomendaciones con votación (+1 / −1 / 👁 Ya la vi),
+búsqueda de películas (títulos en español y por director) y countdown a la próxima función.
+Un solo `index.html`, sin build, sin framework. Backend: Supabase.
 
 ## Poner el logo
 
@@ -13,7 +14,7 @@ Guardá la imagen del papa como `logo.png` en esta carpeta. Si no está, muestra
 
 1. **Sin configurar nada** → funciona, pero cada navegador ve solo sus datos (localStorage). Sirve para probar.
 2. **Con Supabase** → datos compartidos entre los 4. **Ya configurado** (proyecto `miercoles-de-cintas`, región `sa-east-1`).
-3. **Con OMDb** → ratings IMDb + Rotten Tomatoes automáticos (pendiente: falta la key).
+3. **Con OMDb** → ratings IMDb + Rotten Tomatoes y pósters. **Ya configurado.**
 
 ### Supabase — ya hecho
 
@@ -24,13 +25,23 @@ El schema aplicado está en `schema.sql`. Las credenciales (URL + anon key) ya e
 > La key anon es pública por diseño en cualquier sitio estático; el riesgo real es que alguien escriba en la DB.
 > Mitigado con constraints (solo los 4 nombres como autor/votante, largos limitados). Peor caso: borran la lista — no hay data sensible.
 
-### OMDb — ratings IMDb / Rotten Tomatoes (2 minutos, gratis)
+### OMDb — ratings IMDb / Rotten Tomatoes — ya hecho
 
-1. Key gratis (1000 requests/día) en [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx) — llega por mail, hay que clickear el link de activación.
-2. En `CONFIG`: `OMDB_API_KEY: "abc123"`.
+Key en `CONFIG.OMDB_API_KEY` (gratis, 1000 req/día en [omdbapi.com/apikey.aspx](https://www.omdbapi.com/apikey.aspx)).
+Resultados cacheados en localStorage; el límite diario no es problema.
 
-Los resultados se cachean en localStorage, así que el límite diario no es problema.
-Si una película matchea mal (títulos ambiguos tipo "Obsession"), en `CONFIG.WATCHED` podés fijar `search` (título en inglés) y `y` (año).
+### Búsqueda de películas
+
+Tres fuentes encadenadas, sin keys nuevas:
+
+1. **Autocomplete de IMDb** vía Edge Function propia (`supabase/functions/imdb-suggest`) que le agrega CORS.
+   Matchea títulos en español ("el padrino" → The Godfather) porque usa el índice de AKAs de IMDb.
+   *Endpoint no documentado*: si algún día muere, la búsqueda degrada sola a OMDb (títulos en inglés).
+   Plan B documentado: migrar a [TMDB](https://developer.themoviedb.org) (key gratis, búsqueda multiidioma + personas).
+2. **Wikidata SPARQL** para filmografías de directores (click en el chip 🎬 de una persona).
+3. **OMDb** para la ficha (ratings, director, póster) de cada resultado elegido.
+
+Redeploy de la función: `SUPABASE_ACCESS_TOKEN=... npx supabase functions deploy imdb-suggest --project-ref sdnhxripjpjaevafiguk --no-verify-jwt --use-api`
 
 ## Deploy — GitHub Pages
 
@@ -43,15 +54,14 @@ git add -A && git commit -m "cambios" && git push
 ```
 Pages rebuildea solo (1-2 min; el CDN cachea hasta 10 min).
 
-## Editar la lista de vistas
+## Vistas y recomendaciones
 
-En `CONFIG.WATCHED` de `index.html`:
-```js
-{ title: "El Padrino", search: "The Godfather", y: 1972 },
-```
-Agregar línea, guardar, `git push`.
+Todo se administra desde la UI: buscás una película y elegís **Proponer** (va a recomendaciones,
+se vota) o **✔ La vimos** (va a vistas con el Nº siguiente; si estaba propuesta, sale sola de recs).
+Cada uno borra solo lo que agregó. Las 4 funciones históricas (`added_by` null) se tocan solo por SQL.
+
+El countdown de la próxima función se configura en `CONFIG`: `ANCHOR_DATE` (una función pasada) y `PERIOD_DAYS` (14).
 
 ## Futuro (cuando pinte)
 
 - **Puntajes/reviews propios**: la tabla `votes` ya tiene la estructura para crecer — agregar columnas `rating smallint` y `review text` y los botones en la UI. Nada del esquema actual lo bloquea.
-- Mover una rec ganadora a "vistas" automáticamente.

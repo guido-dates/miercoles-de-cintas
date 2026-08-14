@@ -158,6 +158,17 @@
 
   .search-hint { color: rgba(181,174,154,0.55); font-size: 11.5px; margin: -8px 0 18px; letter-spacing: 0.03em; }
 
+  /* fila de personas (directores) */
+  .person-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+  .person-chip {
+    border: 1px solid var(--cream-faint); background: var(--panel); color: var(--cream);
+    padding: 8px 14px; cursor: pointer; font-size: 12.5px; display: inline-flex;
+    gap: 8px; align-items: baseline; transition: all .15s; animation: rise .3s ease both;
+  }
+  .person-chip small { color: var(--cream-dim); font-size: 10.5px; }
+  .person-chip:hover { border-color: var(--gold); color: var(--gold); }
+  .search-note { color: var(--cream-dim); font-size: 12px; margin-bottom: 14px; font-style: italic; }
+
   /* resultados */
   .results-grid {
     display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
@@ -403,11 +414,13 @@
     <h2>Recomendaciones <span class="count" id="recCount"></span></h2>
 
     <form class="search-form" id="searchForm" autocomplete="off">
-      <input id="q" placeholder="Buscá por título o keyword — ej: godfather, casino, heat…" maxlength="120">
+      <input id="q" placeholder="Título, keyword o director — ej: el padrino, coppola, heat…" maxlength="120">
       <button type="submit" class="btn-solid">Buscar</button>
     </form>
-    <div class="search-hint">Elegí de los resultados para proponer con ficha completa (director, ratings, póster).</div>
+    <div class="search-hint">Título (en español también), keyword o director — elegí de los resultados para proponer con ficha completa.</div>
 
+    <div class="person-row hidden" id="personRow"></div>
+    <div class="search-note hidden" id="searchNote"></div>
     <div class="results-grid hidden" id="resultsGrid"></div>
 
     <div class="no-res hidden" id="noRes">
@@ -720,40 +733,128 @@ async function refresh(manual = false) {
 
 /* ---------------- Búsqueda ---------------- */
 let picked = null;          // {Title, Year, imdbID, Poster} o {Title, freeText:true}
-let sResults = [], sTimer = null, lastQuery = "";
+let sResults = [], sPersons = [], sTimer = null, lastQuery = "";
 const sCache = new Map();
+const SUGGEST_URL = `${CONFIG.SUPABASE_URL}/functions/v1/imdb-suggest?q=`;
+
+const fixPoster = (u) => u ? u.replace(/\._V1_\.jpg$/, "._V1_UX280_.jpg") : null;
 
 async function doSearch(query) {
   const q = query.trim();
   if (q.length < 2) return;
   lastQuery = q;
   cancelPick(false);
-  let results = sCache.get(q.toLowerCase());
-  if (results === undefined) {
-    try {
-      // el "*" final hace prefix-match: "godfat*" → The Godfather
-      const d = await (await fetch(`https://www.omdbapi.com/?apikey=${CONFIG.OMDB_API_KEY}&s=${encodeURIComponent(q + "*")}&type=movie`)).json();
-      const seen = new Set();
-      results = d.Response === "True"
-        ? d.Search.filter(m => !seen.has(m.imdbID) && seen.add(m.imdbID))
-        : [];
-    } catch { results = []; }
-    sCache.set(q.toLowerCase(), results);
+  const ck = q.toLowerCase();
+  let hit = sCache.get(ck);
+  if (hit === undefined) {
+    hit = await searchSuggest(q);
+    if (hit === null) hit = { movies: await searchOmdbFallback(q), persons: [] };
+    sCache.set(ck, hit);
   }
   if ($("q").value.trim() !== q) return;   // respuesta vieja
-  sResults = results;
+  sResults = hit.movies;
+  sPersons = hit.persons;
   renderResults();
 }
 
-function renderResults() {
-  const grid = $("resultsGrid"), noRes = $("noRes");
-  if (!sResults.length) {
+// autocomplete de IMDb vía proxy propio: matchea títulos en español (AKAs) y personas
+async function searchSuggest(q) {
+  try {
+    const res = await fetch(SUGGEST_URL + encodeURIComponent(q));
+    if (!res.ok) return null;
+    const d = await res.json();
+    const items = d.d || [];
+    const movies = items
+      .filter(x => x.id?.startsWith("tt") && x.q !== "video game")
+      .map(x => ({ Title: x.l, Year: x.y ? String(x.y) : "", imdbID: x.id, Poster: fixPoster(x.i?.imageUrl) || "N/A" }));
+    const persons = items
+      .filter(x => x.id?.startsWith("nm"))
+      .slice(0, 3)
+      .map(x => ({ nm: x.id, name: x.l, known: x.s || "" }));
+    return { movies, persons };
+  } catch { return null; }
+}
+
+// fallback si el proxy muere: búsqueda OMDb con wildcard (solo títulos en inglés)
+async function searchOmdbFallback(q) {
+  try {
+    const d = await (await fetch(`https://www.omdbapi.com/?apikey=${CONFIG.OMDB_API_KEY}&s=${encodeURIComponent(q + "*")}&type=movie`)).json();
+    const seen = new Set();
+    return d.Response === "True" ? d.Search.filter(m => !seen.has(m.imdbID) && seen.add(m.imdbID)) : [];
+  } catch { return []; }
+}
+
+// filmografía como director vía Wikidata (por imdb nm id)
+async function searchDirector(nm, name) {
+  $("personRow").classList.add("hidden");
+  $("resultsGrid").classList.add("hidden");
+  $("noRes").classList.add("hidden");
+  const note = $("searchNote");
+  note.textContent = `Buscando películas dirigidas por ${name}…`;
+  note.classList.remove("hidden");
+  const ck = "dir:" + nm;
+  let films = sCache.get(ck);
+  if (films === undefined) {
+    try {
+      // una fila por película (GROUP BY) con año de estreno = MIN(fecha de publicación)
+      const sparql = `SELECT ?imdb (SAMPLE(?label) AS ?title) (MIN(YEAR(?date)) AS ?year) WHERE {
+        ?person wdt:P345 "${nm}" .
+        ?film wdt:P57 ?person ; wdt:P345 ?imdb ; wdt:P31 wd:Q11424 ; rdfs:label ?label .
+        FILTER(LANG(?label) IN ("es","en"))
+        OPTIONAL { ?film wdt:P577 ?date . }
+      } GROUP BY ?imdb LIMIT 60`;
+      const res = await fetch("https://query.wikidata.org/sparql?format=json&query=" + encodeURIComponent(sparql));
+      const rows = (await res.json()).results.bindings;
+      films = rows
+        .map(b => ({ Title: b.title.value, Year: b.year ? b.year.value : "", imdbID: b.imdb.value, Poster: "N/A" }))
+        .sort((a, b) => (+b.Year || 0) - (+a.Year || 0))
+        .slice(0, 30);
+    } catch { films = []; }
+    sCache.set(ck, films);
+  }
+  if (!films.length) {
+    note.textContent = `${name} no figura con películas dirigidas en Wikidata.`;
+    if (sPersons.length) $("personRow").classList.remove("hidden");
+    return;
+  }
+  note.textContent = `Dirigidas por ${name}:`;
+  sResults = films;
+  sPersons = [];
+  renderResults(true);
+  enrichResultPosters();
+}
+
+// los resultados de Wikidata vienen sin póster: se completan con OMDb (cacheado)
+async function enrichResultPosters() {
+  const cards = [...document.querySelectorAll(".res-card")];
+  await Promise.all(cards.map(async (card) => {
+    const m = sResults[+card.dataset.i];
+    if (!m || m.Poster !== "N/A" || !m.imdbID) return;
+    const r = await getRatings({ t: m.Title, i: m.imdbID });
+    if (!r?.poster) return;
+    m.Poster = r.poster;
+    if (r.year && !m.Year) m.Year = r.year;
+    const p = card.querySelector(".res-poster");
+    p.style.backgroundImage = `url("${r.poster}")`;
+    p.querySelector(".ph")?.remove();
+    if (r.year) card.querySelector(".res-y").textContent = r.year;
+  }));
+}
+
+function renderResults(keepNote = false) {
+  const grid = $("resultsGrid"), noRes = $("noRes"), row = $("personRow");
+  if (!keepNote) $("searchNote").classList.add("hidden");
+  row.innerHTML = sPersons.map((p, i) =>
+    `<button type="button" class="person-chip" onclick="searchDirector('${esc(p.nm)}', '${esc(p.name)}')">🎬 ${esc(p.name)} <small>${esc(p.known)}</small></button>`).join("");
+  row.classList.toggle("hidden", !sPersons.length);
+  if (!sResults.length && !sPersons.length) {
     grid.classList.add("hidden");
     $("noResQ").textContent = lastQuery;
     noRes.classList.remove("hidden");
     return;
   }
   noRes.classList.add("hidden");
+  if (!sResults.length) { grid.classList.add("hidden"); return; }
   grid.innerHTML = sResults.map((m, i) => `
     <div class="res-card" data-i="${i}">
       <div class="res-poster" ${m.Poster && m.Poster !== "N/A" ? `style="background-image:url('${esc(m.Poster)}')"` : ""}>
@@ -771,6 +872,8 @@ function pick(m) {
   picked = m;
   $("resultsGrid").classList.add("hidden");
   $("noRes").classList.add("hidden");
+  $("personRow").classList.add("hidden");
+  $("searchNote").classList.add("hidden");
   const pp = $("pickedPoster");
   pp.style.backgroundImage = m.Poster && m.Poster !== "N/A" ? `url("${m.Poster}")` : "";
   pp.innerHTML = m.Poster && m.Poster !== "N/A" ? "" : `<span class="ph">${esc(m.Title[0])}</span>`;
@@ -799,6 +902,7 @@ function cancelPick(reshow = true) {
   $("picked").classList.add("hidden");
   $("comment").value = "";
   if (reshow && sResults.length) $("resultsGrid").classList.remove("hidden");
+  if (reshow && sPersons.length) $("personRow").classList.remove("hidden");
 }
 
 $("resultsGrid").addEventListener("click", (e) => {
