@@ -554,8 +554,12 @@ async function searchMovies(q) {
   let results = acCache.get(key);
   if (results === undefined) {
     try {
-      const d = await (await fetch(`https://www.omdbapi.com/?apikey=${CONFIG.OMDB_API_KEY}&s=${encodeURIComponent(q)}&type=movie`)).json();
-      results = d.Response === "True" ? d.Search.slice(0, 6) : [];
+      // el "*" final hace prefix-match: "godfat*" → The Godfather
+      const d = await (await fetch(`https://www.omdbapi.com/?apikey=${CONFIG.OMDB_API_KEY}&s=${encodeURIComponent(q + "*")}&type=movie`)).json();
+      const seen = new Set();
+      results = d.Response === "True"
+        ? d.Search.filter(m => !seen.has(m.imdbID) && seen.add(m.imdbID)).slice(0, 6)
+        : [];
     } catch { results = []; }
     acCache.set(key, results);
   }
