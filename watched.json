@@ -1,0 +1,38 @@
+[
+  {
+    "added_by": null,
+    "created_at": "2026-08-14T12:51:15.14265+00:00",
+    "id": "b1e0b375-ed21-4618-8829-5fa8328765b6",
+    "imdb_id": "tt37287335",
+    "position": 1,
+    "title": "Obsession",
+    "year": "2026"
+  },
+  {
+    "added_by": null,
+    "created_at": "2026-08-14T12:51:15.14265+00:00",
+    "id": "f5cb4388-4560-4ff2-9724-d670a7f49b02",
+    "imdb_id": "tt15047880",
+    "position": 2,
+    "title": "Disclosure Day",
+    "year": "2026"
+  },
+  {
+    "added_by": null,
+    "created_at": "2026-08-14T12:51:15.14265+00:00",
+    "id": "522eaaa6-23b9-44d8-8c71-1453ca54c3cd",
+    "imdb_id": "tt0206634",
+    "position": 3,
+    "title": "Children of Men",
+    "year": "2006"
+  },
+  {
+    "added_by": null,
+    "created_at": "2026-08-14T12:51:15.14265+00:00",
+    "id": "77fdc69b-0e71-41c7-8164-11fafaeaebf5",
+    "imdb_id": "tt0068646",
+    "position": 4,
+    "title": "El Padrino",
+    "year": "1972"
+  }
+]

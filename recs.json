@@ -1,0 +1,92 @@
+[
+  {
+    "author": "Guido",
+    "comment": "Primera de la saga de bond actual. Bombazo, accion, ruleta, amor",
+    "created_at": "2026-08-14T12:43:30.088+00:00",
+    "id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
+    "imdb_id": "tt0381061",
+    "title": "Casino Royale",
+    "year": "2006"
+  },
+  {
+    "author": "Guido",
+    "comment": null,
+    "created_at": "2026-08-14T12:53:58.271+00:00",
+    "id": "93c78c3d-5fbd-42bb-9ba7-b5468b837d5d",
+    "imdb_id": "tt0071562",
+    "title": "The Godfather Part II",
+    "year": "1974"
+  },
+  {
+    "author": "Guido",
+    "comment": null,
+    "created_at": "2026-08-14T12:55:35.632+00:00",
+    "id": "bdf4821a-899d-4495-8e6d-a3c2e1d6c351",
+    "imdb_id": "tt0364569",
+    "title": "Oldboy",
+    "year": "2003"
+  },
+  {
+    "author": "Juan",
+    "comment": "El gordo Fraser",
+    "created_at": "2026-08-14T13:59:02.869+00:00",
+    "id": "61088978-9bf5-4dcb-9fd2-fb3ab7485098",
+    "imdb_id": "tt32547691",
+    "title": "Pressure",
+    "year": "2026"
+  },
+  {
+    "author": "Juan",
+    "comment": "Mismo que el padrino. Creo que todos”la vimos” pero ninguno realmente la vio",
+    "created_at": "2026-08-14T14:00:47.049+00:00",
+    "id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
+    "imdb_id": "tt0133093",
+    "title": "The Matrix",
+    "year": "1999"
+  },
+  {
+    "author": "Guido",
+    "comment": null,
+    "created_at": "2026-08-14T14:28:58.781+00:00",
+    "id": "f8f71c02-b5ae-4889-9daf-9af65fc39938",
+    "imdb_id": "tt14173636",
+    "title": "The Invite",
+    "year": "2026"
+  },
+  {
+    "author": "Guido",
+    "comment": "god",
+    "created_at": "2026-08-14T15:44:32.07+00:00",
+    "id": "3da1a5b4-2baf-4132-b9a5-474da900311c",
+    "imdb_id": "tt0462570",
+    "title": "Tiempo de valientes",
+    "year": "2005"
+  },
+  {
+    "author": "Guido",
+    "comment": "he escuchado maravillas de este filme",
+    "created_at": "2026-08-14T17:26:27.358+00:00",
+    "id": "b8b7db12-0087-4264-a513-5bc6e2afb9ab",
+    "imdb_id": "tt36107185",
+    "title": "La Gradiva",
+    "year": "2026"
+  },
+  {
+    "author": "Juan",
+    "comment": null,
+    "created_at": "2026-08-14T17:29:48.274+00:00",
+    "id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
+    "imdb_id": "tt6644200",
+    "title": "A Quiet Place",
+    "year": "2018"
+  },
+  {
+    "author": "Juan",
+    "comment": null,
+    "created_at": "2026-08-14T17:37:45.697+00:00",
+    "id": "f25f2486-ca68-494b-8b1a-f3d171e2a74e",
+    "imdb_id": "tt1856101",
+    "title": "Blade Runner 2049",
+    "year": "2017"
+  }
+]

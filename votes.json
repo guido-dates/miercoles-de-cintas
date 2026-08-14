@@ -1,0 +1,156 @@
+[
+  {
+    "rec_id": "3da1a5b4-2baf-4132-b9a5-474da900311c",
+    "seen": false,
+    "updated_at": "2026-08-14T17:48:15.559097+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "61088978-9bf5-4dcb-9fd2-fb3ab7485098",
+    "seen": false,
+    "updated_at": "2026-08-14T14:22:59.456116+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "61088978-9bf5-4dcb-9fd2-fb3ab7485098",
+    "seen": false,
+    "updated_at": "2026-08-14T13:59:06.124225+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "93c78c3d-5fbd-42bb-9ba7-b5468b837d5d",
+    "seen": false,
+    "updated_at": "2026-08-14T12:54:01.868172+00:00",
+    "vote": null,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "93c78c3d-5fbd-42bb-9ba7-b5468b837d5d",
+    "seen": false,
+    "updated_at": "2026-08-14T13:54:27.804443+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "93c78c3d-5fbd-42bb-9ba7-b5468b837d5d",
+    "seen": false,
+    "updated_at": "2026-08-14T15:49:14.244451+00:00",
+    "vote": 1,
+    "voter": "Marcos"
+  },
+  {
+    "rec_id": "93c78c3d-5fbd-42bb-9ba7-b5468b837d5d",
+    "seen": false,
+    "updated_at": "2026-08-14T12:59:55.55537+00:00",
+    "vote": 1,
+    "voter": "Tomi"
+  },
+  {
+    "rec_id": "bdf4821a-899d-4495-8e6d-a3c2e1d6c351",
+    "seen": false,
+    "updated_at": "2026-08-14T12:55:38.664189+00:00",
+    "vote": null,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "bdf4821a-899d-4495-8e6d-a3c2e1d6c351",
+    "seen": false,
+    "updated_at": "2026-08-14T13:54:30.663509+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "bdf4821a-899d-4495-8e6d-a3c2e1d6c351",
+    "seen": false,
+    "updated_at": "2026-08-14T15:49:07.96784+00:00",
+    "vote": 1,
+    "voter": "Marcos"
+  },
+  {
+    "rec_id": "bdf4821a-899d-4495-8e6d-a3c2e1d6c351",
+    "seen": false,
+    "updated_at": "2026-08-14T12:59:57.752737+00:00",
+    "vote": 1,
+    "voter": "Tomi"
+  },
+  {
+    "rec_id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
+    "seen": true,
+    "updated_at": "2026-08-14T17:30:47.302558+00:00",
+    "vote": null,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
+    "seen": false,
+    "updated_at": "2026-08-14T17:30:05.986684+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
+    "seen": false,
+    "updated_at": "2026-08-14T14:22:56.985631+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
+    "seen": false,
+    "updated_at": "2026-08-14T14:00:59.767534+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
+    "seen": true,
+    "updated_at": "2026-08-14T15:49:27.911137+00:00",
+    "vote": null,
+    "voter": "Marcos"
+  },
+  {
+    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
+    "seen": false,
+    "updated_at": "2026-08-14T12:43:35.098396+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
+    "seen": false,
+    "updated_at": "2026-08-14T13:54:16.399353+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
+    "seen": false,
+    "updated_at": "2026-08-14T12:59:53.406003+00:00",
+    "vote": 1,
+    "voter": "Tomi"
+  },
+  {
+    "rec_id": "f25f2486-ca68-494b-8b1a-f3d171e2a74e",
+    "seen": false,
+    "updated_at": "2026-08-14T17:38:43.984962+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "f25f2486-ca68-494b-8b1a-f3d171e2a74e",
+    "seen": false,
+    "updated_at": "2026-08-14T17:59:05.67984+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
+    "rec_id": "f8f71c02-b5ae-4889-9daf-9af65fc39938",
+    "seen": false,
+    "updated_at": "2026-08-14T16:02:24.806055+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  }
+]
