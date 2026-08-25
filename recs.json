@@ -63,15 +63,6 @@
     "year": "2005"
   },
   {
-    "author": "Guido",
-    "comment": "he escuchado maravillas de este filme",
-    "created_at": "2026-08-14T17:26:27.358+00:00",
-    "id": "b8b7db12-0087-4264-a513-5bc6e2afb9ab",
-    "imdb_id": "tt36107185",
-    "title": "La Gradiva",
-    "year": "2026"
-  },
-  {
     "author": "Juan",
     "comment": null,
     "created_at": "2026-08-14T17:29:48.274+00:00",
@@ -88,5 +79,14 @@
     "imdb_id": "tt1856101",
     "title": "Blade Runner 2049",
     "year": "2017"
+  },
+  {
+    "author": "Marcos",
+    "comment": "Lloremos juntos",
+    "created_at": "2026-08-25T02:16:15.704+00:00",
+    "id": "54e221fd-329d-437e-8802-2efe2b223871",
+    "imdb_id": "tt0292542",
+    "title": "Son of the Bride",
+    "year": "2001"
   }
 ]
