@@ -1,5 +1,12 @@
 [
   {
+    "rec_id": "067673fb-a6b9-4c3b-9e66-e5d375925d44",
+    "seen": false,
+    "updated_at": "2026-08-26T00:49:43.464189+00:00",
+    "vote": 1,
+    "voter": "Juan"
+  },
+  {
     "rec_id": "3da1a5b4-2baf-4132-b9a5-474da900311c",
     "seen": false,
     "updated_at": "2026-08-14T17:48:15.559097+00:00",
@@ -73,7 +80,7 @@
     "rec_id": "93c78c3d-5fbd-42bb-9ba7-b5468b837d5d",
     "seen": false,
     "updated_at": "2026-08-14T13:54:27.804443+00:00",
-    "vote": 1,
+    "vote": null,
     "voter": "Juan"
   },
   {
@@ -185,7 +192,7 @@
     "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
     "seen": false,
     "updated_at": "2026-08-14T13:54:16.399353+00:00",
-    "vote": 1,
+    "vote": -1,
     "voter": "Juan"
   },
   {
