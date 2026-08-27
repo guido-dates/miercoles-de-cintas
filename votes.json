@@ -2,9 +2,37 @@
   {
     "rec_id": "067673fb-a6b9-4c3b-9e66-e5d375925d44",
     "seen": false,
+    "updated_at": "2026-08-26T12:08:20.006689+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "067673fb-a6b9-4c3b-9e66-e5d375925d44",
+    "seen": false,
     "updated_at": "2026-08-26T00:49:43.464189+00:00",
     "vote": 1,
     "voter": "Juan"
+  },
+  {
+    "rec_id": "067673fb-a6b9-4c3b-9e66-e5d375925d44",
+    "seen": false,
+    "updated_at": "2026-08-26T14:27:49.564436+00:00",
+    "vote": 1,
+    "voter": "Marcos"
+  },
+  {
+    "rec_id": "1281a050-d447-489a-ab1a-3a5baac8abb5",
+    "seen": false,
+    "updated_at": "2026-08-26T12:07:50.440426+00:00",
+    "vote": 1,
+    "voter": "Guido"
+  },
+  {
+    "rec_id": "2ed383c9-f0e0-45ad-8061-6ff7d715baa7",
+    "seen": false,
+    "updated_at": "2026-08-26T14:34:24.016683+00:00",
+    "vote": 1,
+    "voter": "Guido"
   },
   {
     "rec_id": "3da1a5b4-2baf-4132-b9a5-474da900311c",
@@ -123,90 +151,6 @@
     "seen": false,
     "updated_at": "2026-08-14T12:59:57.752737+00:00",
     "vote": 1,
-    "voter": "Tomi"
-  },
-  {
-    "rec_id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
-    "seen": true,
-    "updated_at": "2026-08-14T17:30:47.302558+00:00",
-    "vote": null,
-    "voter": "Guido"
-  },
-  {
-    "rec_id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
-    "seen": false,
-    "updated_at": "2026-08-14T17:30:05.986684+00:00",
-    "vote": 1,
-    "voter": "Juan"
-  },
-  {
-    "rec_id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
-    "seen": true,
-    "updated_at": "2026-08-24T22:34:11.541432+00:00",
-    "vote": null,
-    "voter": "Marcos"
-  },
-  {
-    "rec_id": "d2eba0fb-6af8-4850-ab9e-8f3a1bca9ce3",
-    "seen": true,
-    "updated_at": "2026-08-23T16:03:15.456607+00:00",
-    "vote": null,
-    "voter": "Tomi"
-  },
-  {
-    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
-    "seen": false,
-    "updated_at": "2026-08-14T14:22:56.985631+00:00",
-    "vote": 1,
-    "voter": "Guido"
-  },
-  {
-    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
-    "seen": false,
-    "updated_at": "2026-08-14T14:00:59.767534+00:00",
-    "vote": 1,
-    "voter": "Juan"
-  },
-  {
-    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
-    "seen": true,
-    "updated_at": "2026-08-14T15:49:27.911137+00:00",
-    "vote": 1,
-    "voter": "Marcos"
-  },
-  {
-    "rec_id": "d54c29ed-9f1d-40b6-b4f5-3ad1d3a071e6",
-    "seen": true,
-    "updated_at": "2026-08-23T16:03:32.349194+00:00",
-    "vote": null,
-    "voter": "Tomi"
-  },
-  {
-    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
-    "seen": false,
-    "updated_at": "2026-08-14T12:43:35.098396+00:00",
-    "vote": 1,
-    "voter": "Guido"
-  },
-  {
-    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
-    "seen": false,
-    "updated_at": "2026-08-14T13:54:16.399353+00:00",
-    "vote": -1,
-    "voter": "Juan"
-  },
-  {
-    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
-    "seen": false,
-    "updated_at": "2026-08-24T22:33:54.796682+00:00",
-    "vote": 1,
-    "voter": "Marcos"
-  },
-  {
-    "rec_id": "e665fbec-f8e8-4a2e-92a2-00c576a73925",
-    "seen": false,
-    "updated_at": "2026-08-14T12:59:53.406003+00:00",
-    "vote": -1,
     "voter": "Tomi"
   },
   {
